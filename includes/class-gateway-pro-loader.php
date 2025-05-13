@@ -11,6 +11,16 @@ class Payment4_Gateway_Pro_Loader
     {
         // Load Admin Panel
         $this->load_admin_panel();
+
+        // Load modules conditionally
+        add_action('plugins_loaded', function () {
+            $enabled_plugins = get_option('payment4_gateway_pro_plugins');
+
+            // WooCommerce
+            if (!empty($enabled_plugins['woo']) && class_exists('WooCommerce')) {
+                require_once plugin_dir_path(__FILE__) . '../plugins/woo/index.php';
+            }
+        });
     }
 
     private function load_admin_panel()
