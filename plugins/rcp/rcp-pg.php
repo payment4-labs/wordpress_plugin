@@ -42,6 +42,7 @@ class RCP_Payment_Gateway_Payment4 extends RCP_Payment_Gateway
     {
         parent::__construct($subscription_data);
     }
+
     /**
      * Initialize gateway settings (optional, for future use)
      */
@@ -51,9 +52,11 @@ class RCP_Payment_Gateway_Payment4 extends RCP_Payment_Gateway
         $this->supports[] = 'one-time';
 
         // Load settings
-        $general_options = get_option('payment4_gateway_pro_settings', []);
-        $this->api_key = isset($general_options['api_key']) ? sanitize_text_field($general_options['api_key']) : '';
-        $this->sandbox_mode = !empty($general_options['sandbox_mode']);
+        $general_options    = get_option('payment4_gateway_pro_settings', []);
+        $this->api_key      = isset($general_options['api_key']) ? sanitize_text_field(
+            $general_options['api_key']
+        ) : '';
+        $this->sandbox_mode = ! empty($general_options['sandbox_mode']);
 
         // Set test mode
         $this->test_mode = $this->sandbox_mode || rcp_is_sandbox();
@@ -89,7 +92,10 @@ class RCP_Payment_Gateway_Payment4 extends RCP_Payment_Gateway
             return;
         }
 
-        $amount          = $this->initial_amount; // Includes signup fees, discounts, etc.
+        $amount = $this->initial_amount; // Includes signup fees, discounts, etc.
+        if (rcp_get_currency() == 'IRR') {
+            $amount /= 10;
+        }
         $subscription_id = $this->subscription_key ?: 'rcp_' . $this->membership->get_id();
         $description     = sprintf(__('Membership #%s', 'rcp-payment4'), $this->membership->get_id());
 
@@ -226,7 +232,7 @@ class RCP_Payment_Gateway_Payment4 extends RCP_Payment_Gateway
 
         $status            = ! empty($result['orderStatus']) ? $result['orderStatus'] : 'failed';
         $payment_status    = ! empty($result['paymentStatus']) ? $result['paymentStatus'] : 'failed';
-        $amount_difference = ! empty($result['amountDifference']) ? $result['amountDifference'] : '';
+        $amount_difference = ! empty($result['amountDifference']) ? $result['amountDifference'] : '0';
         $transaction_id    = ! empty($result['transaction_id']) ? $result['transaction_id'] : '';
 
         if ($status === 'completed') {
@@ -246,8 +252,25 @@ class RCP_Payment_Gateway_Payment4 extends RCP_Payment_Gateway
                 )
             );
 
-            // Send email if configured
-//            rcp_email_user($membership->get_user_id(), 'active_membership', $membership->get_id());
+            if ( ! session_id()) {
+                session_start();
+            }
+
+            $_SESSION['payment4_msg'] = sprintf(
+                __('Payment successful. Payment UID: %s, Status: %s, Amount Difference: %s', 'rcp-payment4'),
+                $transaction_id,
+                $payment_status,
+                $amount_difference
+            );
+            $rcp_settings = get_option('rcp_settings');
+            $success_page_id = $rcp_settings['redirect'] ?? false;
+
+            if ($success_page_id) {
+                $success_page_url = get_permalink($success_page_id);
+                wp_safe_redirect($success_page_url);
+                exit;
+            }
+
         } else {
             $rcp_payments_db->update($payment_id, [
                 'status' => 'failed',
@@ -264,11 +287,27 @@ class RCP_Payment_Gateway_Payment4 extends RCP_Payment_Gateway
                 )
             );
 
-            // Send email if configured
-//            rcp_email_user($membership->get_user_id(), 'failed_membership', $membership->get_id());
+            if ( ! session_id()) {
+                session_start();
+            }
+
+            $_SESSION['payment4_msg'] = sprintf(
+                __('Payment failed. Payment UID: %s, Status: %s, Amount Difference: %s, Error: %s', 'rcp-payment4'),
+                $transaction_id,
+                $payment_status,
+                $amount_difference,
+                $result['error']
+            );
+            $rcp_settings = get_option('rcp_settings');
+            $registration_page_id = $rcp_settings['registration_page'] ?? false;
+
+            if ($registration_page_id) {
+                $registration_page_url = get_permalink($registration_page_id);
+                wp_safe_redirect($registration_page_url);
+                exit;
+            }
         }
 
-//        wp_die('Webhook processed.', 'Payment4', ['response' => 200]);
     }
 
     /**
@@ -310,9 +349,8 @@ class RCP_Payment_Gateway_Payment4 extends RCP_Payment_Gateway
             if (is_wp_error($response)) {
                 $error = $response->get_error_message();
             } else {
-
-                $body              = wp_remote_retrieve_body($response);
-                $body              = json_decode($body, true);
+                $body = wp_remote_retrieve_body($response);
+                $body = json_decode($body, true);
 
                 $amountDifference = $body['amountDifference'] ?? '';
 
@@ -323,13 +361,13 @@ class RCP_Payment_Gateway_Payment4 extends RCP_Payment_Gateway
                 $paymentStatus = isset($body['paymentStatus']) ? strtolower($body['paymentStatus']) : 'failed';
                 if (isset($body['verified'])) {
                     if ($body['verified']) {
-                        $orderStatus   = 'completed';
-                        $error          = $paymentStatus === 'acceptable' ? __('Payment acceptable.', 'rcp-payment4') : __(
+                        $orderStatus = 'completed';
+                        $error       = $paymentStatus === 'acceptable' ? __('Payment acceptable.', 'rcp-payment4') : __(
                             'Payment successful.',
                             'rcp-payment4'
                         );
                     } else {
-                        $error          = $paymentStatus === 'mismatched' ? __('Payment mismatched.', 'rcp-payment4') : __(
+                        $error = $paymentStatus === 'mismatched' ? __('Payment mismatched.', 'rcp-payment4') : __(
                             'Payment failed.',
                             'rcp-payment4'
                         );
@@ -405,7 +443,7 @@ class RCP_Payment_Gateway_Payment4 extends RCP_Payment_Gateway
             1013 => __('Invalid language.', 'rcp-payment4'),
         ];
 
-        return isset($errors[$error_code]) ? $errors[$error_code] : __(
+        return $errors[$error_code] ?? __(
             'An error occurred during payment.',
             'rcp-payment4'
         );
@@ -438,3 +476,58 @@ function payment4_rcp_handle_webhook()
         $gateway->process_webhook();
     }
 }
+
+// Add IRR and IRT to currencies
+add_filter('rcp_currencies', 'RCP_IRAN_Currencies');
+function RCP_IRAN_Currencies($currencies)
+{
+    unset($currencies['RIAL'], $currencies['IRR'], $currencies['IRT']);
+    $iran_currencies = array(
+        'IRT' => __('تومان ایران (تومان)', 'rcp'),
+        'IRR' => __('ریال ایران (ریال)', 'rcp'),
+    );
+
+    return array_unique(array_merge($iran_currencies, $currencies));
+}
+
+add_filter('rcp_irr_currency_filter_before', 'RCP_IRR_Before', 10, 3);
+add_filter('rcp_irr_currency_filter_after', 'RCP_IRR_After', 10, 3);
+add_filter('rcp_irt_currency_filter_before', 'RCP_IRT_Before', 10, 3);
+add_filter('rcp_irt_currency_filter_after', 'RCP_IRT_After', 10, 3);
+
+function RCP_IRR_Before($formatted_price, $currency_code, $price)
+{
+    return __('ریال', 'rcp') . ' ' . $price;
+}
+
+function RCP_IRR_After($formatted_price, $currency_code, $price)
+{
+    return $price . ' ' . __('ریال', 'rcp');
+}
+
+function RCP_IRT_Before($formatted_price, $currency_code, $price)
+{
+    return __('تومان', 'rcp') . ' ' . $price;
+}
+
+function RCP_IRT_After($formatted_price, $currency_code, $price)
+{
+    return $price . ' ' . __('تومان', 'rcp');
+}
+
+add_filter('the_content', function ($content) {
+    if ( ! session_id()) {
+        session_start();
+    }
+
+    if ( ! empty($_SESSION['payment4_msg'])) {
+        $error_msg = esc_html($_SESSION['payment4_msg']);
+        unset($_SESSION['payment4_msg']); // فقط یه بار نمایش داده شه
+
+        $msg_html = '<div style="padding: 20px; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 5px; margin-bottom: 20px; text-align: center;">' . $error_msg . '</div>';
+
+        return $msg_html . $content;
+    }
+
+    return $content;
+});
