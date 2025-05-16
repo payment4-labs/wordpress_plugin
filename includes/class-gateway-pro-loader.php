@@ -20,6 +20,11 @@ class Payment4_Gateway_Pro_Loader
             if (!empty($enabled_plugins['woo']) && class_exists('WooCommerce')) {
                 require_once plugin_dir_path(__FILE__) . '../plugins/woo/index.php';
             }
+
+            // RCP
+            if (!empty($enabled_plugins['rcp']) && class_exists('RCP_Payment_Gateway')) {
+                require_once plugin_dir_path(__FILE__) . '../plugins/rcp/rcp-pg.php';
+            }
         });
     }
 

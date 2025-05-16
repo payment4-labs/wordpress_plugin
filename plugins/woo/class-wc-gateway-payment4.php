@@ -136,22 +136,22 @@ class WC_Payment4 extends WC_Payment_Gateway
                 'desc_tip'    => true,
             ],
             // Optionally display API Key and Sandbox Mode as read-only
-            'api_key' => [
-                'title' => __('API Key', 'payment4-woocommerce'),
-                'type' => 'text',
-                'description' => __('Managed in Payment4 General Settings', 'payment4-woocommerce'),
-                'default' => isset($general_options['api_key']) ? esc_attr($general_options['api_key']) : '',
+            'api_key'     => [
+                'title'             => __('API Key', 'payment4-woocommerce'),
+                'type'              => 'text',
+                'description'       => __('Managed in Payment4 General Settings', 'payment4-woocommerce'),
+                'default'           => isset($general_options['api_key']) ? esc_attr($general_options['api_key']) : '',
                 'custom_attributes' => ['readonly' => 'readonly'],
-                'desc_tip' => true,
+                'desc_tip'          => true,
             ],
-            'sandbox' => [
-                'title' => __('Sandbox Mode', 'payment4-woocommerce'),
-                'type' => 'checkbox',
-                'label' => __('Managed in Payment4 General Settings', 'payment4-woocommerce'),
-                'description' => __('Enable/Disable Sandbox mode', 'payment4-woocommerce'),
-                'default' => !empty($general_options['sandbox_mode']) ? 'yes' : 'no',
+            'sandbox'     => [
+                'title'             => __('Sandbox Mode', 'payment4-woocommerce'),
+                'type'              => 'checkbox',
+                'label'             => __('Managed in Payment4 General Settings', 'payment4-woocommerce'),
+                'description'       => __('Enable/Disable Sandbox mode', 'payment4-woocommerce'),
+                'default'           => ! empty($general_options['sandbox_mode']) ? 'yes' : 'no',
                 'custom_attributes' => ['disabled' => 'disabled'],
-                'desc_tip' => true,
+                'desc_tip'          => true,
             ],
             'title'       => [
                 'title'       => __('Title', 'payment4-woocommerce'),
@@ -346,7 +346,9 @@ class WC_Payment4 extends WC_Payment_Gateway
 
         $message = "";
         if ( ! empty($result["message"])) {
-            $message = '<ul class="woocommerce-error" role="alert"><li>' . wp_kses_post($result["message"]) . '</li></ul><br/>';
+            $message = '<ul class="woocommerce-error" role="alert"><li>' . wp_kses_post(
+                    $result["message"]
+                ) . '</li></ul><br/>';
         }
 
         if ( ! empty($result["redirect"])) {
@@ -375,24 +377,18 @@ class WC_Payment4 extends WC_Payment_Gateway
         }
 
         $amount       = $this->get_total();
-        $order_number = $this->get_order_props('order_number');
-        $description  = '#' . $order_number;
         $sandbox      = $this->option('sandbox') == '1';
+        $callback     = $this->get_callback_url_params();
+        $webHook     = $this->get_callback_url_params(false);
 
         $request_data = array(
             "sandBox"        => $sandbox,
             "currency"       => $currency,
             "amount"         => $amount,
-            "callbackUrl"    => $this->get_callback_url(),
-            "callbackParams" => array(
-                "wc-api"   => "WC_Payment4_callback",
-                "wc_order" => $this->order_id,
-            ),
-            "webhookUrl"     => $this->get_webhook_url(),
-            "webhookParams"  => array(
-                "wc-api"   => "WC_Payment4_webhook",
-                "wc_order" => $this->order_id,
-            ),
+            "callbackUrl"    => $callback[0],
+            "callbackParams" => $callback[1],
+//            "webhookUrl"     => $webHook[0],
+//            "webhookParams"  => $webHook[1],
             "language"       => $this->getLanguage(),
         );
 
@@ -540,8 +536,6 @@ class WC_Payment4 extends WC_Payment_Gateway
      */
     public function verifyPayment($order)
     {
-        $sandbox        = $this->option('sandbox') == '1';
-        $api_key        = $this->option('api_key');
         $transaction_id = $this->get('paymentUid');
         $amount         = $this->get_total();
 
@@ -552,7 +546,6 @@ class WC_Payment4 extends WC_Payment_Gateway
 
         if ( ! empty($transaction_id)) {
             $request_data = array(
-                "sandBox"    => $sandbox,
                 "paymentUid" => $transaction_id,
                 "amount"     => $amount,
                 "currency"   => $this->getCurrency(),
@@ -803,25 +796,36 @@ class WC_Payment4 extends WC_Payment_Gateway
     }
 
     /**
-     * Get callback url.
+     * Get callback or webhook url & params.
      *
-     * @return string
+     * @return array
      */
-    protected function get_callback_url()
+    protected function get_callback_url_params($isCallback = true)
     {
-        //        return WC()->api_request_url(get_class($this) . "_callback");
-        return site_url();
-    }
+        $callbackOrWebhook = $isCallback ? "_callback" : "_webhook";
+        // Process return_url to extract base URL and query parameters
+        $parsed_url = parse_url(
+            WC()->api_request_url(
+                get_class($this)
+                . $callbackOrWebhook
+            )
+        );
+        $base_callback_url = $parsed_url['scheme'] . '://' . $parsed_url['host'];
+        if ( ! empty($parsed_url['path'])) {
+            $base_callback_url .= $parsed_url['path'];
+        }
 
-    /**
-     * Get webhook url.
-     *
-     * @return string
-     */
-    protected function get_webhook_url()
-    {
-        //        return WC()->api_request_url(get_class($this) . "_webhook");
-        return site_url();
+        $callback_params = [
+            "wc_order" => $this->order_id,
+        ];
+
+        // If return_url has query parameters, move them to callback_params
+        if ( ! empty($parsed_url['query'])) {
+            parse_str($parsed_url['query'], $query_params);
+            $callback_params = array_merge($callback_params, $query_params);
+        }
+
+        return [$base_callback_url, $callback_params];
     }
 
     /**
@@ -969,7 +973,7 @@ class WC_Payment4 extends WC_Payment_Gateway
             return $general_options['api_key'];
         }
         if ($name === 'sandbox' && isset($general_options['sandbox_mode'])) {
-            return !empty($general_options['sandbox_mode']) ? '1' : '0';
+            return ! empty($general_options['sandbox_mode']) ? '1' : '0';
         }
 
         $option = '';
@@ -991,7 +995,7 @@ class WC_Payment4 extends WC_Payment_Gateway
 
     protected function get($name, $default = '')
     {
-        return !empty($_GET[$name]) ? sanitize_text_field(wp_unslash($_GET[$name])) : $default;
+        return ! empty($_GET[$name]) ? sanitize_text_field(wp_unslash($_GET[$name])) : $default;
     }
 
     protected function post($name, $default = '')
@@ -1048,7 +1052,9 @@ class WC_Payment4 extends WC_Payment_Gateway
             header('Location: ' . esc_url_raw(trim($url)));
         } else {
             // Use esc_js and esc_url for safe JavaScript output
-            $RedirectforPay = "<script type='text/javascript'>window.onload = function () { top.location.href = '" . esc_js(esc_url($url)) . "'; };</script>";
+            $RedirectforPay = "<script type='text/javascript'>window.onload = function () { top.location.href = '" . esc_js(
+                    esc_url($url)
+                ) . "'; };</script>";
             // Output the script safely
             echo wp_kses($RedirectforPay, ['script' => ['type' => []]]);
         }
