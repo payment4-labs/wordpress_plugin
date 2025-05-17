@@ -25,6 +25,11 @@ class Payment4_Gateway_Pro_Loader
             if (!empty($enabled_plugins['rcp']) && class_exists('RCP_Payment_Gateway')) {
                 require_once plugin_dir_path(__FILE__) . '../plugins/rcp/rcp-pg.php';
             }
+
+            // EDD
+            if (!empty($enabled_plugins['edd']) && class_exists( 'Easy_Digital_Downloads' )) {
+                require_once plugin_dir_path(__FILE__) . '../plugins/edd/edd-pg.php';
+            }
         });
     }
 
