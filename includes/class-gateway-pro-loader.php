@@ -3,7 +3,6 @@
 if ( ! defined('ABSPATH')) {
     exit;
 }
-
 class Payment4_Gateway_Pro_Loader
 {
 
@@ -31,6 +30,13 @@ class Payment4_Gateway_Pro_Loader
                 require_once plugin_dir_path(__FILE__) . '../plugins/edd/edd-pg.php';
             }
         });
+        // Gravity Forms
+        add_action('gform_loaded', function () {
+            $enabled_plugins = get_option('payment4_gateway_pro_plugins', []);
+            if (!empty($enabled_plugins['gf']) && class_exists('GFForms')) {
+                require_once plugin_dir_path(__FILE__) . '../plugins/gf/p4-gf.php';
+            }
+        }, 1);
     }
 
     private function load_admin_panel()
