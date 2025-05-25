@@ -1,0 +1,185 @@
+/* Merged Styles for WordPress Admin Settings Pages and Custom Checkboxes */
+
+/* --- General Admin Page Container and Layout --- */
+.wrap {
+    background-color: #ffffff;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 900px; /* Limit width for better readability */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.wrap h1 {
+    color: #2c3e50; /* Darker heading color */
+    font-size: 28px;
+    margin-bottom: 25px;
+    border-bottom: 1px solid #eeeeee;
+    padding-bottom: 15px;
+    text-align: center;
+}
+
+.wrap form {
+    margin-top: 20px;
+}
+
+/* --- Styles for WordPress Settings Sections and Table Layout --- */
+.form-table th {
+    font-weight: 600;
+    padding-right: 20px;
+    vertical-align: top;
+    width: 200px; /* Adjust as needed for labels */
+}
+
+.form-table td {
+    padding-bottom: 15px;
+}
+
+/* --- Input Fields (Text, Email, Password, Number, Textarea, Select) --- */
+.wrap input[type="text"],
+.wrap input[type="email"],
+.wrap input[type="password"],
+.wrap input[type="number"],
+.wrap textarea,
+.wrap select {
+    width: 130%;
+    padding: 10px 14px;
+    border: 1px solid #dddddd;
+    border-radius: 5px;
+    box-sizing: border-box; /* Ensures padding doesn't add to the width */
+    font-size: 14px;
+    line-height: 1.5;
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.wrap input[type="text"]:focus,
+.wrap input[type="email"]:focus,
+.wrap input[type="password"]:focus,
+.wrap input[type="number"]:focus,
+.wrap textarea:focus,
+.wrap select:focus {
+    border-color: #0073aa; /* WordPress primary blue */
+    outline: none;
+    box-shadow: 0 0 0 1px #0073aa;
+}
+
+/* --- Submit Button --- */
+.wrap .submit .button-primary {
+    background-color: #0073aa; /* WordPress primary blue */
+    color: #ffffff;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s ease-in-out;
+    height: auto; /* Override WordPress default fixed height if any */
+    line-height: normal; /* Override WordPress default line-height if any */
+}
+
+.wrap .submit .button-primary:hover,
+.wrap .submit .button-primary:focus {
+    background-color: #005177; /* Darker blue on hover/focus */
+    outline: none;
+    box-shadow: none; /* Remove default focus shadow if desired */
+}
+
+/* --- General Accessibility and Spacing --- */
+.description {
+    font-size: 13px;
+    color: #666;
+    margin-top: 5px;
+    display: block; /* Ensures description is on its own line */
+}
+
+/* Adjustments for WordPress's default .updated or .notice classes if they appear */
+.wrap .notice,
+.wrap .updated {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+/* --- Custom Checkbox Styles --- */
+
+/* Style the container for each checkbox and label within the form-table */
+/* This targets the <tr> elements that typically wrap a setting row */
+.form-table tr {
+    display: flex; /* Use flexbox for alignment */
+    align-items: center; /* Vertically center the checkbox and label */
+    padding: 10px 0; /* Add some vertical padding */
+    border-bottom: 1px solid #eee; /* Add a subtle bottom border for separation */
+}
+
+/* Adjustments for the <th> within the form-table for labels */
+.form-table th {
+    padding-right: 20px;
+    width: 250px; /* Adjust as needed for label width */
+    font-weight: bold;
+    text-align: left;
+}
+
+/* Adjustments for the <td> within the form-table for inputs */
+.form-table td {
+    padding-left: 10px;
+}
+
+/* Hide the default browser checkbox appearance */
+input[type="checkbox"] {
+    appearance: none; /* Remove the default checkbox appearance */
+    -webkit-appearance: none; /* For Safari and Chrome */
+    -moz-appearance: none; /* For Firefox */
+    width: 20px; /* Custom width */
+    height: 20px; /* Custom height */
+    border: 2px solid #888; /* Custom border */
+    border-radius: 4px; /* Slightly rounded corners */
+    outline: none; /* Remove default outline */
+    cursor: pointer; /* Indicate it's clickable */
+    position: relative; /* Needed for positioning the custom checkmark */
+    margin: 0; /* Reset default margins for consistency */
+    flex-shrink: 0; /* Prevent shrinking in flex containers */
+}
+
+/* Style the checkbox when it's checked */
+input[type="checkbox"]:checked {
+    border-color: #0073aa; /* WordPress primary blue when checked */
+    background-color: #0073aa; /* Fill with blue when checked */
+}
+
+/* Add a custom checkmark (or other visual) when the checkbox is checked */
+input[type="checkbox"]:checked::before {
+    content: '\2713'; /* Unicode checkmark character */
+    font-size: 16px; /* Size of the checkmark */
+    color: white; /* Color of the checkmark */
+    position: absolute;
+    bottom: -132%;
+    left: 75%;
+    transform: translate(-50%, -50%); /* Center the checkmark */
+}
+
+@media screen and (max-width: 782px) {
+    input[type="checkbox"]:checked::before {
+        margin: -.1875rem 0 0 -.25rem;
+        height: 1.3125rem;
+        width: 1.3125rem;
+    }
+}
+
+/* Style the label associated with the checkbox */
+/* This assumes your labels are directly adjacent to the input or wrapped in a <label> tag */
+label {
+    margin-left: 10px; /* Add some space between the checkbox and label text */
+    cursor: pointer; /* Indicate it's clickable */
+    user-select: none; /* Prevent text selection while clicking the label */
+}
+
+/* Hover state for the custom checkbox */
+input[type="checkbox"]:hover {
+    border-color: #555; /* Darker border on hover */
+}
+
+/* Focus state for accessibility (important for keyboard navigation) */
+input[type="checkbox"]:focus {
+    box-shadow: 0 0 0 2px rgba(0, 115, 170, 0.5); /* Add a subtle blue focus ring */
+}

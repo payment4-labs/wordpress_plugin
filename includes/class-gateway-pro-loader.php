@@ -42,6 +42,7 @@ class Payment4_Gateway_Pro_Loader
     private function load_admin_panel()
     {
         add_action('admin_menu', [$this, 'payment4_gateway_pro_options_page']);
+        add_action('admin_enqueue_scripts', [$this, 'payment4_admin_styles']);
         // Register settings
         require_once plugin_dir_path(__FILE__) . '../includes/register-settings.php';
         add_action('admin_init', 'payment4_register_settings');
@@ -87,5 +88,18 @@ class Payment4_Gateway_Pro_Loader
     public function render_plugins_settings_page()
     {
         include plugin_dir_path(__FILE__) . '../admin/views/plugins-settings.php';
+    }
+
+    public function payment4_admin_styles() {
+        // Check if we are on your specific admin page
+        // You'll need to replace 'payment4_gateway_pro' with your actual admin page slug
+        if ( isset($_GET['page']) && ( $_GET['page'] == 'payment4-gateway-pro' || $_GET['page'] == 'payment4-gateway-pro-plugins') ) {
+            wp_enqueue_style(
+                'payment4-admin-css', // Handle name for your stylesheet
+                PAYMENT4_PRO_URL . 'assets/css/payment4.css', // Path to your CSS file
+                array(), // Dependencies (if any)
+                '1.0.0' // Version number
+            );
+        }
     }
 }
