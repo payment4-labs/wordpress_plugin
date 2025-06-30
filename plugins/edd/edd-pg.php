@@ -47,8 +47,8 @@ class Payment4Edd
         $plugin_options = get_option('payment4_gateway_pro_plugins', []);
         if ( ! empty($plugin_options['edd'])) {
             $gateways['payment4'] = array(
-                'admin_label'    => __('Payment4', 'edd-payment4'),
-                'checkout_label' => __('Payment4 (Pay with Crypto)', 'edd-payment4'),
+                'admin_label'    => __('Payment4', 'payment4-gateway-pro'),
+                'checkout_label' => __('Payment4 (Pay with Crypto)', 'payment4-gateway-pro'),
             );
         }
 
@@ -63,7 +63,7 @@ class Payment4Edd
         if ('payment4' === $chosen_gateway && ! $is_enabled) {
             edd_set_error(
                 'payment4_gateway_not_configured',
-                __('Payment4 payment gateway is not setup.', 'edd-payment4')
+                __('Payment4 payment gateway is not setup.', 'payment4-gateway-pro')
             );
         }
 
@@ -72,7 +72,7 @@ class Payment4Edd
                 'payment4_gateway_invalid_currency',
                 __(
                     'Currency not supported by Payment4.',
-                    'edd-payment4'
+                    'payment4-gateway-pro'
                 )
             );
         }
@@ -128,7 +128,7 @@ class Payment4Edd
             if (isset($body['status']) && ! $body['status']) {
                 $error_message = isset($body['errorCode']) ? $this->get_error_message($body['errorCode']) : __(
                     'Payment creation failed.',
-                    'edd-payment4'
+                    'payment4-gateway-pro'
                 );
                 edd_set_error('payment4_error', $error_message);
             }
@@ -258,7 +258,8 @@ class Payment4Edd
             $payment          = new \EDD_Payment($payment_id);
             if ($payment_id && ($status === 'completed')) {
                 $note = sprintf(
-                    __('Payment successful. Payment UID: %s, Status: %s, Amount Difference: %s', 'edd-payment4'),
+                    // translators: 1: Payment UID, 2: Payment status, 3: Amount difference
+                    __('Payment successful. Payment UID: %1$s, Status: %2$s, Amount Difference: %3$s', 'payment4-gateway-pro'),
                     $payment4_transaction_id,
                     $payment_status,
                     $amount_difference
@@ -276,7 +277,8 @@ class Payment4Edd
                 edd_send_to_success_page();
             } else {
                 $note = sprintf(
-                    __('Payment failed. Payment UID: %s, Status: %s, Amount Difference: %s, Error: %s', 'edd-payment4'),
+                    // translators: 1: Payment UID, 2: Payment status, 3: Amount difference, 4: Error message
+                    __('Payment failed. Payment UID: %1$s, Status: %2$s, Amount Difference: %3$s, Error: %4$s', 'payment4-gateway-pro'),
                     $payment4_transaction_id,
                     $payment_status,
                     $amount_difference,
@@ -444,7 +446,7 @@ class Payment4Edd
      */
     public function add_currencies($currencies)
     {
-        $currencies['IRT'] = __('Iranian Toman (IRT)', 'edd-payment4');
+        $currencies['IRT'] = __('Iranian Toman (IRT)', 'payment4-gateway-pro');
 
         return $currencies;
     }
@@ -456,7 +458,7 @@ class Payment4Edd
      */
     public function payment_icon($icons)
     {
-        $icons[PAYMENT4_PRO_URL . 'assets/img/small-square-logo.png'] = __('Payment4', 'edd-payment4');
+        $icons[PAYMENT4_PRO_URL . 'assets/img/small-square-logo.png'] = __('Payment4', 'payment4-gateway-pro');
 
         return $icons;
     }

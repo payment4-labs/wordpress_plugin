@@ -11,14 +11,14 @@ function payment4_register_settings()
 
     add_settings_section(
         'payment4_main_section',
-        'General Settings',
+        __('General Settings', 'payment4-gateway-pro'),
         null,
         'payment4_gateway_pro'
     );
 
     add_settings_field(
         'api_key',
-        'API Key',
+        __('API Key', 'payment4-gateway-pro'),
         function () {
             $options = get_option('payment4_gateway_pro_settings');
             ?>
@@ -32,7 +32,7 @@ function payment4_register_settings()
 
     add_settings_field(
         'sandbox_mode',
-        'SandBox Mode',
+        __('SandBox Mode', 'payment4-gateway-pro'),
         function () {
             $options = get_option('payment4_gateway_pro_settings');
             $checked = !empty($options['sandbox_mode']) ? 'checked' : '';
@@ -47,7 +47,7 @@ function payment4_register_settings()
 
     add_settings_section(
         'payment4_plugins_section',
-        'Select Active Plugins',
+        __('Select Active Plugins', 'payment4-gateway-pro'),
         null,
         'payment4_plugins'
     );

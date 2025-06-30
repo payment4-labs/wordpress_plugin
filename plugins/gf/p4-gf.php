@@ -30,10 +30,9 @@ function gfpayment4()
     return GFPayment4::get_instance();
 }
 
-add_filter('the_content', 'your_plugin_display_callback_message');
-function your_plugin_display_callback_message($content)
+add_filter('the_content', 'payment4_display_callback_message');
+function payment4_display_callback_message($content)
 {
-    // Check if we are on the front page (homepage)
     // This prevents the message from appearing on other pages or posts.
 
     // Try to retrieve the transient message

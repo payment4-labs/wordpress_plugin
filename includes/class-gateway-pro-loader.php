@@ -53,7 +53,7 @@ class Payment4_Gateway_Pro_Loader
         // Main menu
         add_menu_page(
             'Payment4 Gateway Pro Settings',
-            'Payment4',
+            __('Payment4', 'payment4-gateway-pro'),
             'manage_options',
             'payment4-gateway-pro',
             [$this, 'render_general_settings_page'],
@@ -63,8 +63,8 @@ class Payment4_Gateway_Pro_Loader
         // Submenu: General Settings
         add_submenu_page(
             'payment4-gateway-pro',
-            'General Settings',
-            'General Settings',
+            __('General Settings', 'payment4-gateway-pro'),
+            __('General Settings', 'payment4-gateway-pro'),
             'manage_options',
             'payment4-gateway-pro',
             [$this, 'render_general_settings_page'],
@@ -72,8 +72,8 @@ class Payment4_Gateway_Pro_Loader
         // Submenu: Plugins
         add_submenu_page(
             'payment4-gateway-pro',
-            'Active Plugins',
-            'Plugins',
+            __('Active Plugins', 'payment4-gateway-pro'),
+            __('Plugins', 'payment4-gateway-pro'),
             'manage_options',
             'payment4-gateway-pro-plugins',
             [$this, 'render_plugins_settings_page'],
@@ -92,7 +92,6 @@ class Payment4_Gateway_Pro_Loader
 
     public function payment4_admin_styles() {
         // Check if we are on your specific admin page
-        // You'll need to replace 'payment4_gateway_pro' with your actual admin page slug
         if ( isset($_GET['page']) && ( $_GET['page'] == 'payment4-gateway-pro' || $_GET['page'] == 'payment4-gateway-pro-plugins') ) {
             wp_enqueue_style(
                 'payment4-admin-css', // Handle name for your stylesheet

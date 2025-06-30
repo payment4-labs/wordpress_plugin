@@ -21,6 +21,10 @@ if ( ! defined( 'PAYMENT4_PRO_URL' ) ) {
     define( 'PAYMENT4_PRO_URL', plugin_dir_url( __FILE__ ) );
 }
 
+add_action('plugins_loaded', function () {
+    load_plugin_textdomain('payment4-gateway-pro', false, dirname(plugin_basename(__FILE__)) . '/languages');
+});
+
 // Load main files
 require_once plugin_dir_path(__FILE__) . 'includes/class-gateway-pro-loader.php';
 

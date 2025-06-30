@@ -13,8 +13,8 @@ function payment4_rcp_register_gateway($gateways)
     $plugin_options = get_option('payment4_gateway_pro_plugins', []);
     if ( ! empty($plugin_options['rcp'])) {
         $gateways['payment4'] = [
-            'label'       => __('Payment4 (Pay with Crypto)', 'rcp-payment4'),
-            'admin_label' => __('Payment4', 'rcp-payment4'),
+            'label'       => __('Payment4 (Pay with Crypto)', 'payment4-gateway-pro'),
+            'admin_label' => __('Payment4', 'payment4-gateway-pro'),
             'class'       => 'RCP_Payment_Gateway_Payment4',
         ];
     }
@@ -22,12 +22,12 @@ function payment4_rcp_register_gateway($gateways)
     return $gateways;
 }
 
-// Load translations
-add_action('plugins_loaded', 'payment4_rcp_load_textdomain');
-function payment4_rcp_load_textdomain()
-{
-    load_plugin_textdomain('rcp-payment4', false, dirname(plugin_basename(__FILE__)) . '/languages/');
-}
+//// Load translations
+//add_action('plugins_loaded', 'payment4_rcp_load_textdomain');
+//function payment4_rcp_load_textdomain()
+//{
+//    load_plugin_textdomain('payment4-gateway-pro', false, dirname(plugin_basename(__FILE__)) . '/languages/');
+//}
 
 /**
  * Payment4 Payment Gateway for Restrict Content Pro
@@ -70,7 +70,7 @@ class RCP_Payment_Gateway_Payment4 extends RCP_Payment_Gateway
         global $rcp_payments_db;
 
         if (empty($this->api_key)) {
-            $this->add_error('missing_api_key', __('Payment4 API Key is missing.', 'rcp-payment4'));
+            $this->add_error('missing_api_key', __('Payment4 API Key is missing.', 'payment4-gateway-pro'));
 
             return;
         }
@@ -79,7 +79,7 @@ class RCP_Payment_Gateway_Payment4 extends RCP_Payment_Gateway
         if ($currency === false) {
             $this->add_error(
                 'invalid_currency',
-                __('The selected currency is not supported by Payment4.', 'rcp-payment4')
+                __('The selected currency is not supported by Payment4.', 'payment4-gateway-pro')
             );
 
             return;
@@ -87,7 +87,7 @@ class RCP_Payment_Gateway_Payment4 extends RCP_Payment_Gateway
 
         // Ensure payment object exists
         if (empty($this->payment) || empty($this->payment->id)) {
-            $this->add_error('payment_missing', __('Payment record not found.', 'rcp-payment4'));
+            $this->add_error('payment_missing', __('Payment record not found.', 'payment4-gateway-pro'));
 
             return;
         }
@@ -97,7 +97,8 @@ class RCP_Payment_Gateway_Payment4 extends RCP_Payment_Gateway
             $amount /= 10;
         }
         $subscription_id = $this->subscription_key ?: 'rcp_' . $this->membership->get_id();
-        $description     = sprintf(__('Membership #%s', 'rcp-payment4'), $this->membership->get_id());
+        // translators: %s is the membership ID.
+        $description = sprintf(__('Membership #%s', 'payment4-gateway-pro'), $this->membership->get_id());
 
         // Process return_url to extract base URL and query parameters
         $parsed_url        = parse_url($this->return_url);
@@ -172,7 +173,7 @@ class RCP_Payment_Gateway_Payment4 extends RCP_Payment_Gateway
         if (isset($body['status']) && $body['status'] === false) {
             $error_message = isset($body['errorCode']) ? $this->get_error_message($body['errorCode']) : __(
                 'Payment creation failed.',
-                'rcp-payment4'
+                'payment4-gateway-pro'
             );
             $this->add_error('payment_failed', $error_message);
 
@@ -189,7 +190,8 @@ class RCP_Payment_Gateway_Payment4 extends RCP_Payment_Gateway
             // Add note to membership
             $this->membership->add_note(
                 sprintf(
-                    __('Payment created. Payment UID: %s, Payment URL: %s', 'rcp-payment4'),
+                // translators: 1: Payment UID, 2: Payment URL.
+                    __('Payment created. Payment UID: %1$s, Payment URL: %2$s', 'payment4-gateway-pro'),
                     $body['paymentUid'],
                     $body['paymentUrl']
                 )
@@ -204,7 +206,7 @@ class RCP_Payment_Gateway_Payment4 extends RCP_Payment_Gateway
             exit;
         }
 
-        $this->add_error('no_redirect', __('Unable to redirect to Payment4 payment page.', 'rcp-payment4'));
+        $this->add_error('no_redirect', __('Unable to redirect to Payment4 payment page.', 'payment4-gateway-pro'));
     }
 
     /**
@@ -245,7 +247,10 @@ class RCP_Payment_Gateway_Payment4 extends RCP_Payment_Gateway
 
             $membership->add_note(
                 sprintf(
-                    __('Payment successful. Payment UID: %s, Status: %s, Amount Difference: %s', 'rcp-payment4'),
+                    __(
+                        'Payment successful. Payment UID: %1$s, Status: %2$s, Amount Difference: %3$s',
+                        'payment4-gateway-pro'
+                    ),
                     $transaction_id,
                     $payment_status,
                     $amount_difference
@@ -257,20 +262,22 @@ class RCP_Payment_Gateway_Payment4 extends RCP_Payment_Gateway
             }
 
             $_SESSION['payment4_msg'] = sprintf(
-                __('Payment successful. Payment UID: %s, Status: %s, Amount Difference: %s', 'rcp-payment4'),
+                __(
+                    'Payment successful. Payment UID: %1$s, Status: %2$s, Amount Difference: %3$s',
+                    'payment4-gateway-pro'
+                ),
                 $transaction_id,
                 $payment_status,
                 $amount_difference
             );
-            $rcp_settings = get_option('rcp_settings');
-            $success_page_id = $rcp_settings['redirect'] ?? false;
+            $rcp_settings             = get_option('rcp_settings');
+            $success_page_id          = $rcp_settings['redirect'] ?? false;
 
             if ($success_page_id) {
                 $success_page_url = get_permalink($success_page_id);
                 wp_safe_redirect($success_page_url);
                 exit;
             }
-
         } else {
             $rcp_payments_db->update($payment_id, [
                 'status' => 'failed',
@@ -279,7 +286,10 @@ class RCP_Payment_Gateway_Payment4 extends RCP_Payment_Gateway
 
             $membership->add_note(
                 sprintf(
-                    __('Payment failed. Payment UID: %s, Status: %s, Amount Difference: %s, Error: %s', 'rcp-payment4'),
+                    __(
+                        'Payment failed. Payment UID: %1$s, Status: %2$s, Amount Difference: %3$s, Error: %4$s',
+                        'payment4-gateway-pro'
+                    ),
                     $transaction_id,
                     $payment_status,
                     $amount_difference,
@@ -292,14 +302,17 @@ class RCP_Payment_Gateway_Payment4 extends RCP_Payment_Gateway
             }
 
             $_SESSION['payment4_msg'] = sprintf(
-                __('Payment failed. Payment UID: %s, Status: %s, Amount Difference: %s, Error: %s', 'rcp-payment4'),
+                __(
+                    'Payment failed. Payment UID: %1$s, Status: %2$s, Amount Difference: %3$s, Error: %4$s',
+                    'payment4-gateway-pro'
+                ),
                 $transaction_id,
                 $payment_status,
                 $amount_difference,
                 $result['error']
             );
-            $rcp_settings = get_option('rcp_settings');
-            $registration_page_id = $rcp_settings['registration_page'] ?? false;
+            $rcp_settings             = get_option('rcp_settings');
+            $registration_page_id     = $rcp_settings['registration_page'] ?? false;
 
             if ($registration_page_id) {
                 $registration_page_url = get_permalink($registration_page_id);
@@ -307,7 +320,6 @@ class RCP_Payment_Gateway_Payment4 extends RCP_Payment_Gateway
                 exit;
             }
         }
-
     }
 
     /**
@@ -362,20 +374,26 @@ class RCP_Payment_Gateway_Payment4 extends RCP_Payment_Gateway
                 if (isset($body['verified'])) {
                     if ($body['verified']) {
                         $orderStatus = 'completed';
-                        $error       = $paymentStatus === 'acceptable' ? __('Payment acceptable.', 'rcp-payment4') : __(
+                        $error       = $paymentStatus === 'acceptable' ? __(
+                            'Payment acceptable.',
+                            'payment4-gateway-pro'
+                        ) : __(
                             'Payment successful.',
-                            'rcp-payment4'
+                            'payment4-gateway-pro'
                         );
                     } else {
-                        $error = $paymentStatus === 'mismatched' ? __('Payment mismatched.', 'rcp-payment4') : __(
+                        $error = $paymentStatus === 'mismatched' ? __(
+                            'Payment mismatched.',
+                            'payment4-gateway-pro'
+                        ) : __(
                             'Payment failed.',
-                            'rcp-payment4'
+                            'payment4-gateway-pro'
                         );
                     }
                 }
             }
         } else {
-            $error = __('Payment ID not found', 'rcp-payment4');
+            $error = __('Payment ID not found', 'payment4-gateway-pro');
         }
 
         return compact('orderStatus', 'paymentStatus', 'amountDifference', 'transaction_id', 'error');
@@ -431,21 +449,21 @@ class RCP_Payment_Gateway_Payment4 extends RCP_Payment_Gateway
     private function get_error_message($error_code)
     {
         $errors = [
-            1001 => __('Callback or Webhook URL must be a valid URL in production mode.', 'rcp-payment4'),
-            1002 => __('API key not provided.', 'rcp-payment4'),
-            1003 => __('API key not found.', 'rcp-payment4'),
-            1004 => __('Gateway not approved.', 'rcp-payment4'),
-            1006 => __('Payment not found.', 'rcp-payment4'),
-            1010 => __('Invalid amount.', 'rcp-payment4'),
-            1012 => __('Invalid currency.', 'rcp-payment4'),
-            1005 => __('Assets not found.', 'rcp-payment4'),
-            1011 => __('Payment amount lower than minimum.', 'rcp-payment4'),
-            1013 => __('Invalid language.', 'rcp-payment4'),
+            1001 => __('Callback or Webhook URL must be a valid URL in production mode.', 'payment4-gateway-pro'),
+            1002 => __('API key not provided.', 'payment4-gateway-pro'),
+            1003 => __('API key not found.', 'payment4-gateway-pro'),
+            1004 => __('Gateway not approved.', 'payment4-gateway-pro'),
+            1006 => __('Payment not found.', 'payment4-gateway-pro'),
+            1010 => __('Invalid amount.', 'payment4-gateway-pro'),
+            1012 => __('Invalid currency.', 'payment4-gateway-pro'),
+            1005 => __('Assets not found.', 'payment4-gateway-pro'),
+            1011 => __('Payment amount lower than minimum.', 'payment4-gateway-pro'),
+            1013 => __('Invalid language.', 'payment4-gateway-pro'),
         ];
 
         return $errors[$error_code] ?? __(
             'An error occurred during payment.',
-            'rcp-payment4'
+            'payment4-gateway-pro'
         );
     }
 

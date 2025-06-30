@@ -1,0 +1,205 @@
+# Copyright (C) 2025 Payment4, Amirhossein Taghizadeh
+# This file is distributed under the GPLv3 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Payment4 Gateway Pro (Woo, Gravity, RCP, EDD) 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/payment4-gateway-pro\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2025-06-30T13:10:07+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: payment4-gateway-pro\n"
+
+#. Plugin Name of the plugin
+#: payment4-gateway-pro.php
+msgid "Payment4 Gateway Pro (Woo, Gravity, RCP, EDD)"
+msgstr "درگاه پرداخت پیمنت ۴ پرو (Woo, Gravity, RCP, EDD)"
+
+#. Description of the plugin
+#: payment4-gateway-pro.php
+msgid "Crypto Payment Gateway integration with WooCommerce, RCP, EDD, and Gravity Forms."
+msgstr "درگاه پرداخت پیمنت۴ برای افزونه های WooCommerce, RCP, EDD و Gravity Forms"
+
+#. Author of the plugin
+#: payment4-gateway-pro.php
+msgid "Payment4, Amirhossein Taghizadeh"
+msgstr "پیمنت۴، امیرحسین تقی‌زاده"
+
+#. Author URI of the plugin
+#: payment4-gateway-pro.php
+msgid "https://payment4.com"
+msgstr ""
+
+#: admin/views/general-settings.php:8
+msgid "Save Settings"
+msgstr "ذخیره تنظیمات"
+
+#: admin/views/plugins-settings.php:8
+msgid "Save Modules"
+msgstr "ذخیره ماژول‌ها"
+
+#: includes/class-gateway-pro-loader.php:56
+msgid "Payment4"
+msgstr "پیمنت۴"
+
+#: includes/class-gateway-pro-loader.php:66
+#: includes/class-gateway-pro-loader.php:67
+#: includes/register-settings.php:14
+msgid "General Settings"
+msgstr "تنظیمات عمومی"
+
+#: includes/class-gateway-pro-loader.php:75
+msgid "Active Plugins"
+msgstr "پلاگین‌های فعال"
+
+#: includes/class-gateway-pro-loader.php:76
+msgid "Plugins"
+msgstr "پلاگین‌ها"
+
+#: includes/register-settings.php:21
+msgid "API Key"
+msgstr "کلید API"
+
+#: includes/register-settings.php:35
+msgid "SandBox Mode"
+msgstr "حالت سندباکس"
+
+#: includes/register-settings.php:50
+msgid "Select Active Plugins"
+msgstr "پلاگین های فعال را انتخاب کنید"
+
+#: plugins/gf/p4-class.php:92
+msgid "To change Payment4 options (such as API key & Sandbox mode) visit"
+msgstr "برای تغییر تنظیمات پیمنت۴ به صفحه تنظیمات مراجعه کنید: "
+
+#: plugins/gf/p4-class.php:94
+msgid "Payment4 Settings"
+msgstr "تنظیمات پیمنت۴"
+
+#: plugins/edd/edd-pg.php:51
+msgid "Payment4 (Pay with Crypto)"
+msgstr "پیمنت۴ ( پرداخت با کریپتو )"
+
+#: plugins/edd/edd-pg.php:66
+msgid "Payment4 payment gateway is not setup."
+msgstr "درگاه پیمنت۴ تنظیم یا فعال نیست."
+
+#: plugins/edd/edd-pg.php:73
+msgid "Currency not supported by Payment4."
+msgstr "ارز توسط پیمنت۴ پشتیبانی نمی‌شود."
+
+#: plugins/edd/edd-pg.php:129
+msgid "Payment creation failed."
+msgstr "پرداخت ایجاد نشد."
+
+#. translators: 1: Payment UID, 2: Payment status, 3: Amount difference
+#: plugins/edd/edd-pg.php:262
+#, php-format
+msgid "Payment successful. Payment UID: %1$s, Status: %2$s, Amount Difference: %3$s"
+msgstr "پرداخت با موفقیت انجام شد. شناسه پرداخت: %1$s، وضعیت: %2$s، اختلاف مبلغ: %3$s"
+
+#. translators: 1: Payment UID, 2: Payment status, 3: Amount difference, 4: Error message
+#: plugins/edd/edd-pg.php:281
+#, php-format
+msgid "Payment failed. Payment UID: %1$s, Status: %2$s, Amount Difference: %3$s, Error: %4$s"
+msgstr "پرداخت ناموفق بود. شناسه پرداخت: %1$s، وضعیت: %2$s، اختلاف مبلغ: %3$s، خطا: %4$s"
+
+#: plugins/edd/edd-pg.php:449
+msgid "Iranian Toman (IRT)"
+msgstr "تومان ایران (IRT)"
+
+#: plugins/rcp/rcp-pg.php:73
+msgid "Payment4 API Key is missing."
+msgstr "کلید API پیمنت۴ پیدا نشد."
+
+#: plugins/rcp/rcp-pg.php:82
+msgid "The selected currency is not supported by Payment4."
+msgstr "ارز مورد نظر توسط پیمنت۴ پشتیبانی نمیشود."
+
+#: plugins/rcp/rcp-pg.php:90
+msgid "Payment record not found."
+msgstr "رکورد پرداخت پیدا نشد."
+
+#. translators: %s is the membership ID.
+#: plugins/rcp/rcp-pg.php:101
+#, php-format
+msgid "Membership #%s"
+msgstr "عضویت شماره‌ی #%s"
+
+#. translators: 1: Payment UID, 2: Payment URL.
+#: plugins/rcp/rcp-pg.php:194
+#, php-format
+msgid "Payment created. Payment UID: %1$s, Payment URL: %2$s"
+msgstr "پرداخت ایجاد شد. شناسه پرداخت: %1$s, لینک پرداخت: %2$s"
+
+#: plugins/rcp/rcp-pg.php:209
+msgid "Unable to redirect to Payment4 payment page."
+msgstr "امکان هدایت به صفحه پرداخت پیمنت۴ وجود ندارد."
+
+#: plugins/rcp/rcp-pg.php:377
+msgid "Payment acceptable."
+msgstr "پرداخت قابل قبول."
+
+#: plugins/rcp/rcp-pg.php:380
+msgid "Payment successful."
+msgstr "پرداخت موفق."
+
+#: plugins/rcp/rcp-pg.php:385
+msgid "Payment mismatched."
+msgstr "پرداخت میس مچ."
+
+#: plugins/rcp/rcp-pg.php:388
+msgid "Payment failed."
+msgstr "پرداخت ناموفق."
+
+#: plugins/rcp/rcp-pg.php:396
+msgid "Payment ID not found"
+msgstr "شناسه پرداخت پیدا نشد."
+
+#: plugins/rcp/rcp-pg.php:452
+msgid "Callback or Webhook URL must be a valid URL in production mode."
+msgstr "لینک کال‌بک یا وب‌هوک در حالت پروداکشن باید یک URL معتبر باشد."
+
+#: plugins/rcp/rcp-pg.php:453
+msgid "API key not provided."
+msgstr "کلید API ارائه نشده است."
+
+#: plugins/rcp/rcp-pg.php:454
+msgid "API key not found."
+msgstr "کلید API پیدا نشد."
+
+#: plugins/rcp/rcp-pg.php:455
+msgid "Gateway not approved."
+msgstr "درگاه پرداخت مورد قبول نیست."
+
+#: plugins/rcp/rcp-pg.php:456
+msgid "Payment not found."
+msgstr "پرداخت پیدا نشد."
+
+#: plugins/rcp/rcp-pg.php:457
+msgid "Invalid amount."
+msgstr "مبلغ نامعتبر."
+
+#: plugins/rcp/rcp-pg.php:458
+msgid "Invalid currency."
+msgstr "ارز نامعتبر."
+
+#: plugins/rcp/rcp-pg.php:459
+msgid "Assets not found."
+msgstr "دارایی‌ها پیدا نشدند."
+
+#: plugins/rcp/rcp-pg.php:460
+msgid "Payment amount lower than minimum."
+msgstr "مبلغ پرداخت کمتر از مجاز است."
+
+#: plugins/rcp/rcp-pg.php:461
+msgid "Invalid language."
+msgstr "زبان نامعتبر."
+
+#: plugins/rcp/rcp-pg.php:464
+msgid "An error occurred during payment."
+msgstr "خطایی هنگام پرداخت رخ داده است."

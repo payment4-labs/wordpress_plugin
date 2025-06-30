@@ -89,9 +89,9 @@ class GFPayment4 extends GFPaymentAddOn
     public function plugin_settings()
     {
         $settings_url = admin_url('admin.php?page=payment4-gateway-pro');
-        echo 'To change Payment4 options (such as API key & Sandbox mode) visit <a href="' . esc_url(
+        echo '<h2>' . __('To change Payment4 options (such as API key & Sandbox mode) visit', 'payment4-gateway-pro')  .'<a href="' . esc_url(
                 $settings_url
-            ) . '" target="_blank">Payment4 Settings</a>';
+            ) . '" target="_blank">'. __('Payment4 Settings', 'payment4-gateway-pro') . '</a></h2>';
     }
 
     /**

@@ -150,12 +150,12 @@ input[type="checkbox"]:checked {
 /* Add a custom checkmark (or other visual) when the checkbox is checked */
 input[type="checkbox"]:checked::before {
     content: '\2713'; /* Unicode checkmark character */
-    font-size: 16px; /* Size of the checkmark */
+    font-size: 18px; /* Size of the checkmark */
     color: white; /* Color of the checkmark */
     position: absolute;
-    bottom: -132%;
-    left: 75%;
-    transform: translate(-50%, -50%); /* Center the checkmark */
+    bottom: -70%;
+    right: 0;
+    /*transform: translate(-50%, -50%); !* Center the checkmark *!*/
 }
 
 @media screen and (max-width: 782px) {
