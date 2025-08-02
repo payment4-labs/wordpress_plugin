@@ -500,27 +500,69 @@ class WC_Payment4 extends WC_Payment_Gateway
                 ]
             );
         } else {
-            $order->update_status('wc-failed');
 
-            $error = ! empty($result['error']) ? $result['error'] : __(
-                'An error occurred during payment.',
-                'payment4-woocommerce'
-            );
-            $this->order_note(
-                $order,
-                "failed",
-                [
-                    "uid"              => $transaction_id,
-                    "url"              => "",
-                    "status"           => $paymentStatus,
-                    "amountDifference" => $amountDifference,
-                ]
-            );
+            if ($paymentStatus === "mismatch"){
+                $this->payment_mismatch($order, $transaction_id);
+            }else {
+                $order->update_status('wc-failed');
+            }
+                $error = ! empty($result['error']) ? $result['error'] : __(
+                    'An error occurred during payment.',
+                    'payment4-woocommerce'
+                );
+                $this->order_note(
+                    $order,
+                    $paymentStatus,
+                    [
+                        "uid"              => $transaction_id,
+                        "url"              => "",
+                        "status"           => $paymentStatus,
+                        "amountDifference" => $amountDifference,
+                    ]
+                );
             //$order->add_order_note($error . "<br/>Payment UID :  " . $transaction_id, 1);
         }
 
         $this->set_message($paymentStatus, $error . "<br/>Payment UID  :  " . $transaction_id, $redirect);
-        exit;
+    }
+
+    public function payment_mismatch($order, $transaction_id = '' ) {
+        if ( ! $order->get_id() ) {
+            return false;
+        }
+
+        try {
+
+            if ( WC()->session ) {
+                WC()->session->set( 'order_awaiting_payment', false );
+            }
+
+            if ( ! empty( $transaction_id ) ) {
+                $order->set_transaction_id( $transaction_id );
+            }
+
+            $order->add_order_note( __( 'Payment mismatch detected by Payment4 plugin.', 'woocommerce' ) );
+
+            $order->set_status( 'payment4-mismatch' );
+            $order->save();
+
+        } catch ( Exception $e ) {
+            $logger = wc_get_logger();
+            $logger->error(
+                sprintf(
+                    'Error handling payment mismatch for order #%d',
+                    $order->get_id()
+                ),
+                array(
+                    'order' => $order,
+                    'error' => $e,
+                )
+            );
+            $order->add_order_note( __( 'Payment mismatch handling failed.', 'woocommerce' ) . ' ' . $e->getMessage() );
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -593,7 +635,7 @@ class WC_Payment4 extends WC_Payment_Gateway
                     } else {
                         $paymentStatus = $payment_status;
                         if (empty($error)) {
-                            $error = $payment_status === "mismatched" ? __(
+                            $error = $payment_status === "mismatch" ? __(
                                 "Payment mismatched.",
                                 'payment4-woocommerce'
                             ) : __("Payment failed.", 'payment4-woocommerce');
@@ -922,7 +964,7 @@ class WC_Payment4 extends WC_Payment_Gateway
             wp_redirect($redirect);
         }
 
-        return $message;
+        return;
     }
 
     /*
@@ -942,6 +984,9 @@ class WC_Payment4 extends WC_Payment_Gateway
         }
         if ($type === "failed") {
             $message .= "- Payment failed <br/>";
+        }
+        if ($type === "mismatch") {
+            $message .= "- Payment mismatch <br/>";
         }
 
         $message .= "- Sandbox mode : " . ($sandbox ? "true" : "false") . "<br/>";

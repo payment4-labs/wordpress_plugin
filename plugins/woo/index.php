@@ -16,7 +16,7 @@ class WC_Payment4_Payments
     public static function init()
     {
         // Load plugin textdomain.
-        add_action('plugins_loaded', array(__CLASS__, 'load_textdomain'));
+        add_action('plugins_loaded', array(__CLASS__, 'plugin_loaded'));
 
         self::includes();
         // Payments gateway class.
@@ -30,6 +30,13 @@ class WC_Payment4_Payments
 
         // Hook the custom function to the 'woocommerce_blocks_loaded' action
         add_action('woocommerce_blocks_loaded', array(__CLASS__, 'oawoo_register_order_approval_payment_method_type'));
+
+
+    }
+
+    public static function plugin_loaded()
+    {
+        self::load_textdomain();
     }
 
     /**
@@ -125,3 +132,20 @@ class WC_Payment4_Payments
 }
 
 WC_Payment4_Payments::init();
+add_action('init', 'payment4_register_custom_order_status', 0);
+add_filter('wc_order_statuses', 'payment4_add_custom_order_status');
+function payment4_register_custom_order_status() {
+    register_post_status('wc-payment4-mismatch', array(
+        'label'                     => 'Payment4 Mismatch',
+        'public'                    => true,
+        'exclude_from_search'       => false,
+        'show_in_admin_all_list'    => true,
+        'show_in_admin_status_list' => true,
+        'label_count'               => _n_noop('Payment4 Mismatch <span class="count">(%s)</span>', 'Payment4 Mismatch <span class="count">(%s)</span>'),
+    ));
+}
+
+function payment4_add_custom_order_status($order_statuses) {
+    $order_statuses['wc-payment4-mismatch'] = 'Payment4 Mismatch';
+    return $order_statuses;
+}
