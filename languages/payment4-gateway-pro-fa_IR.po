@@ -399,3 +399,9 @@ msgstr "مبلغ پرداخت کمتر از حداقل است."
 #: plugins/woo/class-wc-gateway-payment4.php:1229
 msgid "invalid language"
 msgstr "زبان نامعتبر."
+
+msgid "Settings"
+msgstr "تنظیمات"
+
+msgid "Settings saved successfully."
+msgstr "تنظیمات با موفقیت ذخیره شد."

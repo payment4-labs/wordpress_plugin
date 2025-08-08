@@ -66,7 +66,7 @@ class WC_Payment4 extends WC_Payment_Gateway
                 __('Get %s Percent Discount for paying by Payment4', 'payment4-gateway-pro'),
                 $this->option('discount_percent')
             );
-            $this->description .= " and " . $discount_text;
+            $this->description .= ". " . $discount_text;
         }
 
         if (version_compare(WC()->version, '2.0.0', '>=')) {
@@ -284,7 +284,7 @@ class WC_Payment4 extends WC_Payment_Gateway
                 'type'        => 'checkbox',
                 'label'       => __('Activation of the payment gateway', 'payment4-gateway-pro'),
                 'description' => __('Tick the checkbox to activate', 'payment4-gateway-pro'),
-                'default'     => 'yes',
+                'default'     => 'no',
                 'desc_tip'    => true,
             ],
             // Optionally display API Key and Sandbox Mode as read-only
@@ -323,9 +323,7 @@ class WC_Payment4 extends WC_Payment_Gateway
                 'title'       => __('Discount Percent', 'payment4-gateway-pro'),
                 'type'        => 'text',
                 'description' => __('Set 0 for no Discount', 'payment4-gateway-pro'),
-                'default'     => '0',
-                'custom_html' => '<input type="text" name="discount_percent" value="0" readonly />',
-                // Input field is set to readonly
+                'default'     => '0.0',
             ],
             'completed_massage'  => [
                 'title'       => __('Success payment message', 'payment4-gateway-pro'),

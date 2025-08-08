@@ -73,3 +73,17 @@ function payment4_register_settings()
         'payment4_plugins_section'
     );
 }
+
+function payment4_admin_settings_notice()
+{
+    if (
+        isset($_GET['settings-updated']) &&
+        $_GET['settings-updated'] == 'true' &&
+        isset($_GET['page']) &&
+        ($_GET['page'] === 'payment4-gateway-pro' || $_GET['page'] === 'payment4-gateway-pro-plugins')
+    ) {
+        echo '<div class="notice notice-success is-dismissible">
+            <p>' . __('Settings saved successfully.', 'payment4-gateway-pro') . '</p>
+        </div>';
+    }
+}
