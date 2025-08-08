@@ -102,11 +102,17 @@ class WC_Payment4 extends WC_Payment_Gateway
         $status = $order->get_status();
 
         if ($status === 'p4-mismatch') {
-            return __('⛔ Your order was not completed due to a payment mismatch. Please contact support.', 'payment4-gateway-pro');
+            return __(
+                '⛔ Your order was not completed due to a payment mismatch. Please contact support.',
+                'payment4-gateway-pro'
+            );
         }
 
         if ($status === 'p4-acceptable') {
-            return __('⚠️ Your order was received, but the payment amount was not exact. Your order is under review.', 'payment4-gateway-pro');
+            return __(
+                '⚠️ Your order was received, but the payment amount was not exact. Your order is under review.',
+                'payment4-gateway-pro'
+            );
         }
 
         return $text;
@@ -123,13 +129,19 @@ class WC_Payment4 extends WC_Payment_Gateway
 
         if ($status === 'p4-mismatch') {
             echo '<div class="woocommerce-message">';
-            echo __('⛔ Your order was not completed due to a payment mismatch.<br/>Please contact support.', 'payment4-gateway-pro');
+            echo __(
+                '⛔ Your order was not completed due to a payment mismatch.<br/>Please contact support.',
+                'payment4-gateway-pro'
+            );
             echo '</div>';
         }
 
         if ($status === 'p4-acceptable') {
             echo '<div class="woocommerce-message" >';
-            echo __('⚠️ Your order was received, but the payment amount was not exact.<br/>Please wait while we review it.', 'payment4-gateway-pro');
+            echo __(
+                '⚠️ Your order was received, but the payment amount was not exact.<br/>Please wait while we review it.',
+                'payment4-gateway-pro'
+            );
             echo '</div>';
         }
     }
@@ -1084,13 +1096,6 @@ class WC_Payment4 extends WC_Payment_Gateway
 
     protected function order_note($order, $type, $data)
     {
-        $existing_notes = wc_get_order_notes(['order_id' => $order->get_id()]);
-        foreach ($existing_notes as $note) {
-            if (str_contains($note->content, $data['uid']) && ! str_contains($note->content, "Payment created")) {
-                return; // already added
-            }
-        }
-
         $sandbox = $this->option('sandbox') == '1';
 
         $message = "Payment {$type}" . "<br/>";
@@ -1111,6 +1116,12 @@ class WC_Payment4 extends WC_Payment_Gateway
         }
 
         if ( ! empty($message)) {
+            $existing_notes = wc_get_order_notes(['order_id' => $order->get_id()]);
+            foreach ($existing_notes as $note) {
+                if (str_contains($note->content, $data['uid']) && str_contains($note->content, $message)) {
+                    return; // already added
+                }
+            }
             $order->add_order_note($message, 1);
         }
     }
