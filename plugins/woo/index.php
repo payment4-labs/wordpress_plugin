@@ -1,4 +1,5 @@
 <?php
+
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
 
 
@@ -19,8 +20,6 @@ class WC_Payment4_Payments
         add_action('plugins_loaded', array(__CLASS__, 'plugin_loaded'));
 
         self::includes();
-        // Payments gateway class.
-//        add_action('plugins_loaded', array(__CLASS__, 'includes'), 0);
 
         // Make the Payments gateway available to WC.
         add_filter('woocommerce_payment_gateways', array(__CLASS__, 'add_gateway'));
@@ -30,8 +29,6 @@ class WC_Payment4_Payments
 
         // Hook the custom function to the 'woocommerce_blocks_loaded' action
         add_action('woocommerce_blocks_loaded', array(__CLASS__, 'oawoo_register_order_approval_payment_method_type'));
-
-
     }
 
     public static function plugin_loaded()
@@ -63,7 +60,7 @@ class WC_Payment4_Payments
     public static function oawoo_register_order_approval_payment_method_type()
     {
         // Check if the required class exists
-        if (!class_exists('Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType')) {
+        if ( ! class_exists('Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType')) {
             return;
         }
 
@@ -78,6 +75,22 @@ class WC_Payment4_Payments
                 $payment_method_registry->register(new WC_Payment4_Blocks);
             }
         );
+    }
+
+    public static function init_discount_handler()
+    {
+        // WooCommerce creates an instance of the gateway for us, so we can retrieve it.
+        $gateways = WC()->payment_gateways->payment_gateways();
+
+        // Check if our gateway is active and in the list.
+        if (isset($gateways['WC_Payment4'])) {
+            $payment_gateway = $gateways['WC_Payment4'];
+
+            // Now you can use the instance to check for the discount.
+            if ($payment_gateway->have_discount()) {
+                require_once 'fee_handle.php';
+            }
+        }
     }
 
     /**
@@ -96,6 +109,7 @@ class WC_Payment4_Payments
     public static function add_gateway($gateways)
     {
         $gateways[] = 'WC_Payment4';
+
         return $gateways;
     }
 
@@ -132,20 +146,74 @@ class WC_Payment4_Payments
 }
 
 WC_Payment4_Payments::init();
-add_action('init', 'payment4_register_custom_order_status', 0);
-add_filter('wc_order_statuses', 'payment4_add_custom_order_status');
-function payment4_register_custom_order_status() {
-    register_post_status('wc-payment4-mismatch', array(
-        'label'                     => 'Payment4 Mismatch',
+
+add_action('init', 'payment4_register_custom_order_status');
+
+function payment4_register_custom_order_status()
+{
+    register_post_status('wc-p4-acceptable', array(
+        'label'                     => _x('Payment4 Acceptable', 'Order status', 'payment4'),
         'public'                    => true,
         'exclude_from_search'       => false,
         'show_in_admin_all_list'    => true,
         'show_in_admin_status_list' => true,
-        'label_count'               => _n_noop('Payment4 Mismatch <span class="count">(%s)</span>', 'Payment4 Mismatch <span class="count">(%s)</span>'),
+        'label_count'               => _n_noop(
+            'Payment4 Acceptable <span class="count">(%s)</span>',
+            'Payment4 Acceptables <span class="count">(%s)</span>',
+            'payment4'
+        ),
+    ));
+
+    register_post_status('wc-p4-mismatch', array(
+        'label'                     => _x('Payment4 Mismatch', 'Order status', 'payment4'),
+        'public'                    => true,
+        'show_in_admin_status_list' => true,
+        'label_count'               => _n_noop(
+            'Payment4 Mismatch <span class="count">(%s)</span>',
+            'Payment4 Mismatches <span class="count">(%s)</span>',
+            'payment4'
+        ),
     ));
 }
 
-function payment4_add_custom_order_status($order_statuses) {
-    $order_statuses['wc-payment4-mismatch'] = 'Payment4 Mismatch';
+add_filter('wc_order_statuses', 'payment4_add_custom_order_status');
+
+function payment4_add_custom_order_status($order_statuses)
+{
+    $order_statuses['wc-p4-mismatch']   = _x('Payment4 Mismatch', 'Order status', 'payment4');
+    $order_statuses['wc-p4-acceptable'] = _x('Payment4 Acceptable', 'Order status', 'payment4');
+
     return $order_statuses;
+}
+
+add_action('admin_enqueue_scripts', function () {
+    $screen = get_current_screen();
+
+    if (isset($screen->id) && strpos($screen->id, 'wc-orders') !== false) {
+        add_action('admin_head', 'payment4_custom_order_status_colors');
+    }
+});
+
+function payment4_custom_order_status_colors() {
+    if (!is_admin()) return;
+
+    echo '<style>
+        .order-status.status-p4-mismatch {
+            background-color: #ff5e57 !important;
+            color: #ffffff !important;
+        }
+
+        .order-status.status-p4-acceptable {
+            background-color: #58abe8 !important;
+            color: #000000 !important;
+        }
+
+        .status-p4-mismatch td, .status-p4-mismatch th {
+            background-color: #fff5f5 !important;
+        }
+
+        .status-p4-acceptable td, .status-p4-acceptable th {
+            background-color: #f4fff4 !important;
+        }
+    </style>';
 }

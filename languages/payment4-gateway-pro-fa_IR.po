@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-06-30T13:10:07+00:00\n"
+"POT-Creation-Date: 2025-08-08T15:52:31+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: payment4-gateway-pro\n"
@@ -43,6 +43,11 @@ msgid "Save Modules"
 msgstr "ذخیره ماژول‌ها"
 
 #: includes/class-gateway-pro-loader.php:56
+#: plugins/edd/edd-pg.php:50
+#: plugins/edd/edd-pg.php:461
+#: plugins/rcp/rcp-pg.php:17
+#: plugins/woo/class-wc-gateway-payment4.php:40
+#: plugins/woo/class-wc-gateway-payment4.php:312
 msgid "Payment4"
 msgstr "پیمنت۴"
 
@@ -61,6 +66,7 @@ msgid "Plugins"
 msgstr "پلاگین‌ها"
 
 #: includes/register-settings.php:21
+#: plugins/woo/class-wc-gateway-payment4.php:292
 msgid "API Key"
 msgstr "کلید API"
 
@@ -72,15 +78,8 @@ msgstr "حالت سندباکس"
 msgid "Select Active Plugins"
 msgstr "پلاگین های فعال را انتخاب کنید"
 
-#: plugins/gf/p4-class.php:92
-msgid "To change Payment4 options (such as API key & Sandbox mode) visit"
-msgstr "برای تغییر تنظیمات پیمنت۴ به صفحه تنظیمات مراجعه کنید: "
-
-#: plugins/gf/p4-class.php:94
-msgid "Payment4 Settings"
-msgstr "تنظیمات پیمنت۴"
-
 #: plugins/edd/edd-pg.php:51
+#: plugins/rcp/rcp-pg.php:16
 msgid "Payment4 (Pay with Crypto)"
 msgstr "پیمنت۴ ( پرداخت با کریپتو )"
 
@@ -93,17 +92,22 @@ msgid "Currency not supported by Payment4."
 msgstr "ارز توسط پیمنت۴ پشتیبانی نمی‌شود."
 
 #: plugins/edd/edd-pg.php:129
+#: plugins/rcp/rcp-pg.php:174
 msgid "Payment creation failed."
 msgstr "پرداخت ایجاد نشد."
 
 #. translators: 1: Payment UID, 2: Payment status, 3: Amount difference
 #: plugins/edd/edd-pg.php:262
+#: plugins/rcp/rcp-pg.php:250
+#: plugins/rcp/rcp-pg.php:265
 #, php-format
 msgid "Payment successful. Payment UID: %1$s, Status: %2$s, Amount Difference: %3$s"
 msgstr "پرداخت با موفقیت انجام شد. شناسه پرداخت: %1$s، وضعیت: %2$s، اختلاف مبلغ: %3$s"
 
 #. translators: 1: Payment UID, 2: Payment status, 3: Amount difference, 4: Error message
 #: plugins/edd/edd-pg.php:281
+#: plugins/rcp/rcp-pg.php:289
+#: plugins/rcp/rcp-pg.php:305
 #, php-format
 msgid "Payment failed. Payment UID: %1$s, Status: %2$s, Amount Difference: %3$s, Error: %4$s"
 msgstr "پرداخت ناموفق بود. شناسه پرداخت: %1$s، وضعیت: %2$s، اختلاف مبلغ: %3$s، خطا: %4$s"
@@ -111,6 +115,14 @@ msgstr "پرداخت ناموفق بود. شناسه پرداخت: %1$s، وضع
 #: plugins/edd/edd-pg.php:449
 msgid "Iranian Toman (IRT)"
 msgstr "تومان ایران (IRT)"
+
+#: plugins/gf/p4-class.php:92
+msgid "To change Payment4 options (such as API key & Sandbox mode) visit"
+msgstr "برای تغییر تنظیمات پیمنت۴ به صفحه تنظیمات مراجعه کنید: "
+
+#: plugins/gf/p4-class.php:94
+msgid "Payment4 Settings"
+msgstr "تنظیمات پیمنت۴"
 
 #: plugins/rcp/rcp-pg.php:73
 msgid "Payment4 API Key is missing."
@@ -141,6 +153,7 @@ msgid "Unable to redirect to Payment4 payment page."
 msgstr "امکان هدایت به صفحه پرداخت پیمنت۴ وجود ندارد."
 
 #: plugins/rcp/rcp-pg.php:377
+#: plugins/woo/class-wc-gateway-payment4.php:743
 msgid "Payment acceptable."
 msgstr "پرداخت قابل قبول."
 
@@ -203,3 +216,186 @@ msgstr "زبان نامعتبر."
 #: plugins/rcp/rcp-pg.php:464
 msgid "An error occurred during payment."
 msgstr "خطایی هنگام پرداخت رخ داده است."
+
+#: plugins/woo/class-wc-gateway-payment4.php:41
+msgid "Gateway settings for WooCommerce"
+msgstr "تنظیمات درگاه برای ووکامرس"
+
+#: plugins/woo/class-wc-gateway-payment4.php:49
+#: plugins/woo/assets/checkout.js:2
+msgid "( Pay with Crypto )"
+msgstr "( پرداخت با کریپتو )"
+
+#. translators: %s is replaced with "string"
+#: plugins/woo/class-wc-gateway-payment4.php:66
+#, php-format
+msgid "Get %s Percent Discount for paying by Payment4"
+msgstr "دریافت %s درصد تخفیف درصورت پرداخت با پیمنت۴"
+
+#: plugins/woo/class-wc-gateway-payment4.php:105
+msgid "⛔ Your order was not completed due to a payment mismatch. Please contact support."
+msgstr "⛔ سفارش شما به دلیل مغایرت در مبلغ نهایی ثبت نشد. لطفاً با پشتیبانی تماس بگیرید."
+
+#: plugins/woo/class-wc-gateway-payment4.php:109
+msgid "⚠️ Your order was received, but the payment amount was not exact. Your order is under review."
+msgstr "⚠️ سفارش شما با موفقیت ثبت شد، اما مبلغ پرداختی دقیق نبود. سفارش در حال بررسی است"
+
+#: plugins/woo/class-wc-gateway-payment4.php:126
+msgid "⛔ Your order was not completed due to a payment mismatch.<br/>Please contact support."
+msgstr "⛔ سفارش شما به دلیل مغایرت در مبلغ نهایی ثبت نشد.<br/>لطفاً با پشتیبانی تماس بگیرید"
+
+#: plugins/woo/class-wc-gateway-payment4.php:132
+msgid "⚠️ Your order was received, but the payment amount was not exact.<br/>Please wait while we review it."
+msgstr "⚠️ سفارش شما ثبت شد، اما مبلغ پرداختی با مبلغ مورد انتظار متفاوت بود.<br/>لطفاً منتظر بررسی باشید."
+
+#: plugins/woo/class-wc-gateway-payment4.php:196
+#: plugins/woo/class-wc-gateway-payment4.php:226
+#, php-format
+msgid "Payment4 Crypto Discount (%s%%)"
+msgstr "تخفیف پیمنت۴ (%s%%)"
+
+#: plugins/woo/class-wc-gateway-payment4.php:283
+msgid "Enable/Disable"
+msgstr "فعال\غیرفعال"
+
+#: plugins/woo/class-wc-gateway-payment4.php:285
+msgid "Activation of the payment gateway"
+msgstr "فعالسازی درگاه پرداخت"
+
+#: plugins/woo/class-wc-gateway-payment4.php:286
+msgid "Tick the checkbox to activate"
+msgstr "حهت فعالسازی کلیک کنید"
+
+#: plugins/woo/class-wc-gateway-payment4.php:294
+#: plugins/woo/class-wc-gateway-payment4.php:302
+msgid "Managed in Payment4 General Settings"
+msgstr "قابل تنظیم در تنظیمات عمومی پیمنت۴"
+
+#: plugins/woo/class-wc-gateway-payment4.php:300
+msgid "Sandbox Mode"
+msgstr "حالت سندباکس"
+
+#: plugins/woo/class-wc-gateway-payment4.php:303
+msgid "Enable/Disable Sandbox mode"
+msgstr "فعال\غیرفعال حالت سندباکس"
+
+#: plugins/woo/class-wc-gateway-payment4.php:309
+msgid "Title"
+msgstr "تیتر"
+
+#: plugins/woo/class-wc-gateway-payment4.php:311
+msgid "Gateway title"
+msgstr "تیتر درگاه"
+
+#: plugins/woo/class-wc-gateway-payment4.php:316
+msgid "Description"
+msgstr "توضیحات"
+
+#: plugins/woo/class-wc-gateway-payment4.php:318
+msgid "Gateway description"
+msgstr "توضیحات درگاه"
+
+#: plugins/woo/class-wc-gateway-payment4.php:319
+#: plugins/woo/assets/checkout.js:4
+msgid "Accepting Crypto Payments"
+msgstr "پرداخت با کریپتو"
+
+#: plugins/woo/class-wc-gateway-payment4.php:323
+msgid "Discount Percent"
+msgstr "درصد تخفیف"
+
+#: plugins/woo/class-wc-gateway-payment4.php:325
+msgid "Set 0 for no Discount"
+msgstr "برای پاک کردن تخفیف 0 قرار دهید"
+
+#: plugins/woo/class-wc-gateway-payment4.php:331
+msgid "Success payment message"
+msgstr "پیام پرداخت موفق"
+
+#: plugins/woo/class-wc-gateway-payment4.php:334
+msgid "Successful payment."
+msgstr "پرداخت موفق"
+
+#: plugins/woo/class-wc-gateway-payment4.php:337
+msgid "Failed payment message"
+msgstr "پیام پرداخت ناموفق"
+
+#: plugins/woo/class-wc-gateway-payment4.php:340
+msgid "Transaction Failed."
+msgstr "تراکنش ناموفق"
+
+#: plugins/woo/class-wc-gateway-payment4.php:343
+msgid "Acceptable payment message"
+msgstr "پیام پرداخت Acceptable"
+
+#: plugins/woo/class-wc-gateway-payment4.php:346
+msgid "Payment accepted."
+msgstr "پرداخت قابل قبول"
+
+#: plugins/woo/class-wc-gateway-payment4.php:349
+msgid "Mismatched payment message"
+msgstr "پیام پرداخت mismatch"
+
+#: plugins/woo/class-wc-gateway-payment4.php:352
+msgid "Payment Mismatched."
+msgstr "پرداخت غیرقابل قبول"
+
+#: plugins/woo/class-wc-gateway-payment4.php:466
+msgid "Back"
+msgstr "برگشت"
+
+#: plugins/woo/class-wc-gateway-payment4.php:482
+msgid "The selected currency is not supported"
+msgstr "ارز انتخابی پشتیبانی نمیشود."
+
+#: plugins/woo/class-wc-gateway-payment4.php:549
+msgid "Order number not found."
+msgstr "شماره سفارش پیدا نشد."
+
+#: plugins/woo/class-wc-gateway-payment4.php:557
+msgid "The status of the transaction has already been determined."
+msgstr "وضعیت تراکنش قبلا مشخص شده است."
+
+#: plugins/woo/class-wc-gateway-payment4.php:746
+msgid "Payment successfull."
+msgstr "پرداخت موفق."
+
+#: plugins/woo/class-wc-gateway-payment4.php:1220
+msgid "callbackUrl must be a URL address in production mode"
+msgstr "لینک کالبک باید یک آدرس در پروداکشن باشد."
+
+#: plugins/woo/class-wc-gateway-payment4.php:1221
+msgid "api key not send"
+msgstr "کلید API ارسال نشده است."
+
+#: plugins/woo/class-wc-gateway-payment4.php:1222
+msgid "api key not found"
+msgstr "کلید API پیدا نشد."
+
+#: plugins/woo/class-wc-gateway-payment4.php:1223
+msgid "gateway not approved"
+msgstr "درگاه مورد تایید نیست."
+
+#: plugins/woo/class-wc-gateway-payment4.php:1224
+msgid "payment not found"
+msgstr "پرداخت پیدا نشد."
+
+#: plugins/woo/class-wc-gateway-payment4.php:1225
+msgid "invalid amount"
+msgstr "مبلغ نامعتبر است."
+
+#: plugins/woo/class-wc-gateway-payment4.php:1226
+msgid "invalid currency"
+msgstr "ارز نامعتبر است."
+
+#: plugins/woo/class-wc-gateway-payment4.php:1227
+msgid "assets not found"
+msgstr "دارایی ها پیدا نشدند."
+
+#: plugins/woo/class-wc-gateway-payment4.php:1228
+msgid "payment amount lower than minimum"
+msgstr "مبلغ پرداخت کمتر از حداقل است."
+
+#: plugins/woo/class-wc-gateway-payment4.php:1229
+msgid "invalid language"
+msgstr "زبان نامعتبر."

@@ -37,8 +37,8 @@ class WC_Payment4 extends WC_Payment_Gateway
     public function __construct()
     {
         $this->id                 = 'WC_Payment4';
-        $this->method_title       = __('Payment4', 'payment4-woocommerce');
-        $this->method_description = __('Gateway settings for WooCommerce', 'payment4-woocommerce');
+        $this->method_title       = __('Payment4', 'payment4-gateway-pro');
+        $this->method_description = __('Gateway settings for WooCommerce', 'payment4-gateway-pro');
         $this->icon               = trailingslashit(WP_PLUGIN_URL) . plugin_basename(
                 dirname(__FILE__)
             ) . '/assets/logo.png';
@@ -46,7 +46,7 @@ class WC_Payment4 extends WC_Payment_Gateway
         $this->init_form_fields();
         $this->init_settings();
 
-        $this->title = $this->settings['title'] . " " . __('( Pay with Crypto )', 'payment4-woocommerce');
+        $this->title = $this->settings['title'] . " " . __('( Pay with Crypto )', 'payment4-gateway-pro');
         $img         = ' <img src="' . $this->icon . '" style="width: 90px;" >';
 
 
@@ -55,17 +55,18 @@ class WC_Payment4 extends WC_Payment_Gateway
         $this->has_fields = false;
 
         $this->description = $this->settings['description'];
-        if ($this->is_checkout_block()) {
-            $this->settings['discount_percent'] = 0;
-        }
 
-        if ($this->have_discount() && ! $this->is_checkout_block()) {
-            $this->description .= "<br>";
-            $this->description .= sprintf(
+        // discount
+        if ($this->have_discount()) {
+            add_action('wp_enqueue_scripts', array($this, 'enqueue_payment4_refresh_script'));
+            add_action('woocommerce_cart_calculate_fees', array($this, 'add_payment4_discount_to_cart'), 10, 1);
+            add_action('woocommerce_checkout_update_order_review', array($this, 'update_checkout_discounts'));
+            $discount_text     = sprintf(
             /* translators: %s is replaced with "string" */
-                __('Get %s Percent Discount for paying by Payment4 Crypto', 'payment4-woocommerce'),
+                __('Get %s Percent Discount for paying by Payment4', 'payment4-gateway-pro'),
                 $this->option('discount_percent')
             );
+            $this->description .= " and " . $discount_text;
         }
 
         if (version_compare(WC()->version, '2.0.0', '>=')) {
@@ -77,7 +78,8 @@ class WC_Payment4 extends WC_Payment_Gateway
             add_action('woocommerce_update_options_payment_gateways', [$this, 'process_admin_options']);
         }
 
-        add_action('woocommerce_receipt_' . $this->id, [$this, 'process_payment_request']);
+
+        add_action('woocommerce_receipt_' . $this->id, [$this, 'process_p4_payment_request']);
         add_action('woocommerce_api_' . strtolower(get_class($this)) . "_callback", [
             $this,
             'process_payment_verify',
@@ -86,16 +88,166 @@ class WC_Payment4 extends WC_Payment_Gateway
             $this,
             'process_payment_webhook',
         ]);
-        if ( ! $this->is_checkout_block()) {
-            require_once 'fee_handle.php';
-            add_action('wp_enqueue_scripts', array($this, 'enqueue_payment4_refresh_script'));
-            // add_action("woocommerce_before_checkout_form", [$this, "default_payment"]);
+
+        add_filter('woocommerce_thankyou_order_received_text', [$this, 'payment4_custom_order_received_text'], 10, 2);
+        add_action('woocommerce_before_thankyou', [$this, 'payment4_custom_thankyou_message'], 5);
+    }
+
+    function payment4_custom_order_received_text($text, $order)
+    {
+        if ( ! $order || $this->id !== $order->get_payment_method()) {
+            return $text;
+        }
+
+        $status = $order->get_status();
+
+        if ($status === 'p4-mismatch') {
+            return __('⛔ Your order was not completed due to a payment mismatch. Please contact support.', 'payment4-gateway-pro');
+        }
+
+        if ($status === 'p4-acceptable') {
+            return __('⚠️ Your order was received, but the payment amount was not exact. Your order is under review.', 'payment4-gateway-pro');
+        }
+
+        return $text;
+    }
+
+    function payment4_custom_thankyou_message($order_id)
+    {
+        $order = wc_get_order($order_id);
+        if ( ! $order) {
+            return;
+        }
+
+        $status = $order->get_status();
+
+        if ($status === 'p4-mismatch') {
+            echo '<div class="woocommerce-message">';
+            echo __('⛔ Your order was not completed due to a payment mismatch.<br/>Please contact support.', 'payment4-gateway-pro');
+            echo '</div>';
+        }
+
+        if ($status === 'p4-acceptable') {
+            echo '<div class="woocommerce-message" >';
+            echo __('⚠️ Your order was received, but the payment amount was not exact.<br/>Please wait while we review it.', 'payment4-gateway-pro');
+            echo '</div>';
         }
     }
 
-    public function is_checkout_block()
+    public function add_payment4_discount_to_cart($cart)
     {
-        return WC_Blocks_Utils::has_block_in_page(wc_get_page_id('checkout'), 'woocommerce/checkout');
+        if (is_admin() && ! defined('DOING_AJAX')) {
+            return;
+        }
+
+        if (is_cart() && ! defined('DOING_AJAX')) {
+            return;
+        }
+
+        $is_payment4_selected  = false;
+        $chosen_payment_method = WC()->session->get('chosen_payment_method');
+
+        if ($chosen_payment_method === $this->id) {
+            $is_payment4_selected = true;
+        }
+
+        if (isset($_POST['payment_method']) && $_POST['payment_method'] === $this->id) {
+            $is_payment4_selected = true;
+        }
+
+        if (defined('WC_DOING_AJAX') && WC_DOING_AJAX) {
+            $request_uri = $_SERVER['REQUEST_URI'] ?? '';
+            if (strpos($request_uri, '/wc/store/') !== false) {
+                global $wp;
+                if (isset($wp->query_vars['rest_route']) && strpos(
+                        $wp->query_vars['rest_route'],
+                        '/wc/store/'
+                    ) !== false
+                ) {
+                    $input = file_get_contents('php://input');
+                    if ($input) {
+                        $data = json_decode($input, true);
+                        if (isset($data['payment_method']) && $data['payment_method'] === $this->id) {
+                            $is_payment4_selected = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        if ( ! $is_payment4_selected && empty($chosen_payment_method) && is_checkout()) {
+            $available_gateways = WC()->payment_gateways->get_available_payment_gateways();
+            $gateway_keys       = array_keys($available_gateways);
+            if ( ! empty($gateway_keys) && $gateway_keys[0] === $this->id) {
+                $is_payment4_selected = true;
+            }
+        }
+
+        if ($is_payment4_selected) {
+            $discount_percent = floatval($this->get_option('discount_percent'));
+
+            if ($discount_percent <= 0) {
+                return;
+            }
+
+            $fees            = $cart->get_fees();
+            $discount_exists = false;
+            $discount_name   = sprintf(
+                __('Payment4 Crypto Discount (%s%%)', 'payment4-gateway-pro'),
+                $discount_percent
+            );
+
+            foreach ($fees as $fee) {
+                if ($fee->name === $discount_name) {
+                    $discount_exists = true;
+                    break;
+                }
+            }
+
+            if ( ! $discount_exists) {
+                $cart_total      = $cart->get_subtotal(); // Use subtotal to avoid double counting other fees
+                $discount_amount = ($cart_total * $discount_percent) / 100;
+
+                if ($discount_amount > 0) {
+                    $cart->add_fee($discount_name, -$discount_amount, false);
+                }
+            }
+        } else {
+            $this->remove_payment4_discounts($cart);
+        }
+    }
+
+    public function remove_payment4_discounts($cart)
+    {
+        $fees                 = $cart->get_fees();
+        $discount_removed     = false;
+        $discount_percent     = floatval($this->get_option('discount_percent'));
+        $discount_name_prefix = sprintf(
+            __('Payment4 Crypto Discount (%s%%)', 'payment4-gateway-pro'),
+            $discount_percent
+        );
+
+        foreach ($fees as $fee_key => $fee) {
+            if ($fee->name === $discount_name_prefix) {
+                unset($cart->fees[$fee_key]);
+                $discount_removed = true;
+            }
+        }
+
+        if ($discount_removed) {
+            $cart->fees = array_values($cart->fees);
+        }
+    }
+
+    public function update_checkout_discounts()
+    {
+        $chosen_payment_method = WC()->session->get('chosen_payment_method');
+
+        if ($chosen_payment_method !== $this->id && WC()->cart) {
+            $this->remove_payment4_discounts(WC()->cart);
+        }
+
+        WC()->cart->calculate_fees();
     }
 
     function enqueue_payment4_refresh_script()
@@ -125,125 +277,82 @@ class WC_Payment4 extends WC_Payment_Gateway
             $shortcodes[] = "$shortcode:$title";
         }
 
-        $shortcodes = '<br>' . implode(' - ', $shortcodes);
-        $fields     = [
-            'enabled'     => [
-                'title'       => __('Enable/Disable', 'payment4-woocommerce'),
+        $shortcodes        = '<br>' . implode(' - ', $shortcodes);
+        $fields            = [
+            'enabled'            => [
+                'title'       => __('Enable/Disable', 'payment4-gateway-pro'),
                 'type'        => 'checkbox',
-                'label'       => __('Activation of the payment gateway', 'payment4-woocommerce'),
-                'description' => __('Tick the checkbox to activate', 'payment4-woocommerce'),
+                'label'       => __('Activation of the payment gateway', 'payment4-gateway-pro'),
+                'description' => __('Tick the checkbox to activate', 'payment4-gateway-pro'),
                 'default'     => 'yes',
                 'desc_tip'    => true,
             ],
             // Optionally display API Key and Sandbox Mode as read-only
-            'api_key'     => [
-                'title'             => __('API Key', 'payment4-woocommerce'),
+            'api_key'            => [
+                'title'             => __('API Key', 'payment4-gateway-pro'),
                 'type'              => 'text',
-                'description'       => __('Managed in Payment4 General Settings', 'payment4-woocommerce'),
+                'description'       => __('Managed in Payment4 General Settings', 'payment4-gateway-pro'),
                 'default'           => isset($general_options['api_key']) ? esc_attr($general_options['api_key']) : '',
                 'custom_attributes' => ['readonly' => 'readonly'],
                 'desc_tip'          => true,
             ],
-            'sandbox'     => [
-                'title'             => __('Sandbox Mode', 'payment4-woocommerce'),
+            'sandbox'            => [
+                'title'             => __('Sandbox Mode', 'payment4-gateway-pro'),
                 'type'              => 'checkbox',
-                'label'             => __('Managed in Payment4 General Settings', 'payment4-woocommerce'),
-                'description'       => __('Enable/Disable Sandbox mode', 'payment4-woocommerce'),
+                'label'             => __('Managed in Payment4 General Settings', 'payment4-gateway-pro'),
+                'description'       => __('Enable/Disable Sandbox mode', 'payment4-gateway-pro'),
                 'default'           => ! empty($general_options['sandbox_mode']) ? 'yes' : 'no',
                 'custom_attributes' => ['disabled' => 'disabled'],
                 'desc_tip'          => true,
             ],
-            'title'       => [
-                'title'       => __('Title', 'payment4-woocommerce'),
+            'title'              => [
+                'title'       => __('Title', 'payment4-gateway-pro'),
                 'type'        => 'text',
-                'description' => __('Gateway title', 'payment4-woocommerce'),
-                'default'     => __('Payment4 (Pay with Crypto)', 'payment4-woocommerce'),
+                'description' => __('Gateway title', 'payment4-gateway-pro'),
+                'default'     => __('Payment4', 'payment4-gateway-pro'),
                 'desc_tip'    => true,
             ],
-            'description' => [
-                'title'       => __('Description', 'payment4-woocommerce'),
+            'description'        => [
+                'title'       => __('Description', 'payment4-gateway-pro'),
                 'type'        => 'text',
-                'description' => __('Gateway description', 'payment4-woocommerce'),
-                'default'     => __('Accepting Crypto Payments', 'payment4-woocommerce'),
+                'description' => __('Gateway description', 'payment4-gateway-pro'),
+                'default'     => __('Accepting Crypto Payments', 'payment4-gateway-pro'),
                 'desc_tip'    => true,
             ],
-
-        ];
-        if ($this->is_checkout_block()) {
-            $fields['discount_percent'] = [
-                'title'             => __('Discount Percent', 'payment4-woocommerce'),
-                'type'              => 'text',
-                'description'       => __(
-                    'for using discount use [woocommerce_checkout] shortcode in checkout page',
-                    'payment4-woocommerce'
-                ),
-                'default'           => '0',
-                'custom_attributes' => [
-                    'readonly' => 'readonly',
-                    'disabled' => 'disabled', // Prevent editing or submission
-                ],
-            ];
-        } else {
-            $fields['discount_percent'] = [
-                'title'       => __('Discount Percent', 'payment4-woocommerce'),
+            'discount_percent'   => [
+                'title'       => __('Discount Percent', 'payment4-gateway-pro'),
                 'type'        => 'text',
-                'description' => __('Set 0 for no Discount', 'payment4-woocommerce'),
+                'description' => __('Set 0 for no Discount', 'payment4-gateway-pro'),
                 'default'     => '0',
                 'custom_html' => '<input type="text" name="discount_percent" value="0" readonly />',
                 // Input field is set to readonly
-            ];
-        }
-
-        $fields_extend     = [
+            ],
             'completed_massage'  => [
-                'title'       => __('Success payment message', 'payment4-woocommerce'),
+                'title'       => __('Success payment message', 'payment4-gateway-pro'),
                 'type'        => 'textarea',
                 'description' => $shortcodes,
-                'default'     => __('Successful payment.', 'payment4-woocommerce'),
+                'default'     => __('Successful payment.', 'payment4-gateway-pro'),
             ],
             'failed_massage'     => [
-                'title'       => __('Failed payment message', 'payment4-woocommerce'),
+                'title'       => __('Failed payment message', 'payment4-gateway-pro'),
                 'type'        => 'textarea',
                 'description' => $shortcodes,
-                'default'     => __('Transaction Failed.', 'payment4-woocommerce'),
+                'default'     => __('Transaction Failed.', 'payment4-gateway-pro'),
             ],
             'accepted_massage'   => [
-                'title'       => __('Acceptable payment message', 'payment4-woocommerce'),
+                'title'       => __('Acceptable payment message', 'payment4-gateway-pro'),
                 'type'        => 'textarea',
                 'description' => $shortcodes,
-                'default'     => __('Payment accepted.', 'payment4-woocommerce'),
+                'default'     => __('Payment accepted.', 'payment4-gateway-pro'),
             ],
             'mismatched_massage' => [
-                'title'       => __('Mismatched payment message', 'payment4-woocommerce'),
+                'title'       => __('Mismatched payment message', 'payment4-gateway-pro'),
                 'type'        => 'textarea',
                 'description' => $shortcodes,
-                'default'     => __('Payment Mismatched.', 'payment4-woocommerce'),
+                'default'     => __('Payment Mismatched.', 'payment4-gateway-pro'),
             ],
         ];
-        $fields            = array_merge($fields, $fields_extend);
         $this->form_fields = apply_filters('WC_Payment4_Config', $fields);
-    }
-
-    /**
-     * Check if the gateway is available for use.
-     *
-     * @return bool
-     */
-    public function is_available()
-    {
-        $is_available = parent::is_available();
-
-        // Check if WooCommerce is enabled in plugin settings
-        $plugin_options = get_option('payment4_gateway_pro_plugins', []);
-        if (empty($plugin_options['woo'])) {
-            $is_available = false;
-        }
-
-        if ($this->getCurrency() === false) {
-            $is_available = false;
-        }
-
-        return $is_available;
     }
 
     /**
@@ -287,8 +396,6 @@ class WC_Payment4 extends WC_Payment_Gateway
             $data = json_decode($response['body'], true);
             if (is_array($data) && count($data) > 1) {
                 $allowed = $data;
-                // if(in_array("IRT",$allowed)  && $woocommerce_currency ==)
-                // 	$allowed["irr"] = "IRR";
             }
         }
 
@@ -334,13 +441,12 @@ class WC_Payment4 extends WC_Payment_Gateway
     /**
      * Redirect to payment gateway.
      */
-    public function process_payment_request($order_id)
+    public function process_p4_payment_request($order_id)
     {
-        global $woocommerce;
-
         $this->order_id = $order_id;
-        $this->session('set', 'order_id', $order_id);
-        $order = $this->get_order($order_id);
+
+        /** @var WC_Order $order */
+        $order = wc_get_order($order_id);
 
         $result = $this->createPayment($order);
 
@@ -359,7 +465,7 @@ class WC_Payment4 extends WC_Payment_Gateway
         $form = '<form action="" method="POST" class="p4-payment-form" id="p4-payment-form">';
         $form .= '<a class="button cancel" href="' . esc_url($this->get_checkout_url()) . '">' . esc_html__(
                 'Back',
-                'payment4-woocommerce'
+                'payment4-gateway-pro'
             ) . '</a>';
         $form .= '</form><br/>';
 
@@ -373,13 +479,13 @@ class WC_Payment4 extends WC_Payment_Gateway
     {
         $currency = $this->getCurrency();
         if ($currency === false) {
-            return __("The selected currency is not supported", 'payment4-woocommerce');
+            return __("The selected currency is not supported", 'payment4-gateway-pro');
         }
 
-        $amount       = $this->get_total();
-        $sandbox      = $this->option('sandbox') == '1';
-        $callback     = $this->get_callback_url_params();
-        $webHook     = $this->get_callback_url_params(false);
+        $amount   = $this->get_total();
+        $sandbox  = $this->option('sandbox') == '1';
+        $callback = $this->get_callback_url_params();
+        $webHook  = $this->get_callback_url_params(false);
 
         $request_data = array(
             "sandBox"        => $sandbox,
@@ -387,8 +493,8 @@ class WC_Payment4 extends WC_Payment_Gateway
             "amount"         => $amount,
             "callbackUrl"    => $callback[0],
             "callbackParams" => $callback[1],
-//            "webhookUrl"     => $webHook[0],
-//            "webhookParams"  => $webHook[1],
+            "webhookUrl"     => $webHook[0],
+            "webhookParams"  => $webHook[1],
             "language"       => $this->getLanguage(),
         );
 
@@ -425,15 +531,11 @@ class WC_Payment4 extends WC_Payment_Gateway
 
             $this->order_note($order, "created", ["uid" => $body["paymentUid"], "url" => $body["paymentUrl"]]);
 
-            //$order->add_order_note("Payment UID :  " . $body["paymentUid"]. "<br/>Payment Url: ". $body["paymentUrl"], 1);
-
             return ["message" => null, "redirect" => $body["paymentUrl"]];
         }
     }
 
-    /**
-     * Process payment callback.
-     */
+
     public function process_payment_verify()
     {
         $redirect = $this->get_checkout_url();
@@ -444,7 +546,7 @@ class WC_Payment4 extends WC_Payment_Gateway
         );
 
         if (empty($order_id)) {
-            $this->set_message('failed', __('Order number not found.', 'payment4-woocommerce'), $redirect);
+            $this->set_message('failed', __('Order number not found.', 'payment4-gateway-pro'), $redirect);
         }
 
         $order = $this->get_order($order_id);
@@ -452,7 +554,7 @@ class WC_Payment4 extends WC_Payment_Gateway
         if ( ! $this->needs_payment($order)) {
             $this->set_message(
                 'failed',
-                __('The status of the transaction has already been determined.', 'payment4-woocommerce'),
+                __('The status of the transaction has already been determined.', 'payment4-gateway-pro'),
                 $redirect
             );
         }
@@ -461,104 +563,115 @@ class WC_Payment4 extends WC_Payment_Gateway
 
         $result = $this->verifyPayment($order);
 
-
         $error            = '';
-        $status           = ! empty($result['orderStatus']) ? $result['orderStatus'] : '';
-        $paymentStatus    = ! empty($result['paymentStatus']) ? $result['paymentStatus'] : 'failed';
-        $amountDifference = ! empty($result['amountDifference']) ? $result['amountDifference'] : '';
-        $transaction_id   = ! empty($result['transaction_id']) ? $result['transaction_id'] : '';;
+        $status           = $result['orderStatus'] ?? '';
+        $paymentStatus    = $result['paymentStatus'] ?? 'failed';
+        $amountDifference = $result['amountDifference'] ?? '';
+        $transaction_id   = $result['transaction_id'] ?? '';
 
+        // پیش‌فرض
+        $redirect = $this->get_return_url($order);
 
-        if ($status == 'completed') {
-            $redirect = $this->get_return_url($order);
+        // هندل کردن وضعیت‌ها
+        switch ($paymentStatus) {
+            case 'success':
+                if ($order->get_status() !== 'completed') {
+                    $order->payment_complete($transaction_id); // خودش هوک رو اجرا می‌کنه
+                }
+                $this->empty_cart(); // فقط در حالت موفق
+                break;
 
-            //            echo "<pre>" . print_r($order, true) . "</pre>";
+            case 'acceptable':
+                if ($order->get_status() !== 'p4-acceptable') {
+                    $this->handle_payment4_status($order, 'acceptable', $transaction_id);
+                }
+                break;
 
-            $order->payment_complete($transaction_id);
-            //            echo "<hr>";
+            case 'mismatch':
+                if ($order->get_status() !== 'p4-mismatch') {
+                    $this->handle_payment4_status($order, 'mismatch', $transaction_id);
+                }
+                break;
 
-            $this->empty_cart();
+            default:
+                // failed یا هرچیزی که غیر از موارد بالا باشه
+                if ($order->get_status() !== 'failed') {
+                    $order->update_status('wc-failed', __('Payment failed.', 'payment4-gateway-pro'));
+                }
 
-            $shortcodes = $this->get_shortcodes_values();
-
-            // $note       = [__('The transaction was successful. <br/> Payment UID : '. $transaction_id, 'payment4-woocommerce')];
-
-            // foreach ($this->fields_shortcodes() as $key => $value) {
-            // 	$key    = trim($key, '\{\}');
-            // 	$note[] = "$value : {$shortcodes[$key]}";
-            // }
-            //$order->add_order_note(implode("<br>", $note), 1);
-
-            $this->order_note(
-                $order,
-                "success",
-                [
+                $this->order_note($order, 'failed', [
                     "uid"              => $transaction_id,
-                    "url"              => "",
                     "status"           => $paymentStatus,
                     "amountDifference" => $amountDifference,
-                ]
-            );
-        } else {
-
-            if ($paymentStatus === "mismatch"){
-                $this->payment_mismatch($order, $transaction_id);
-            }else {
-                $order->update_status('wc-failed');
-            }
-                $error = ! empty($result['error']) ? $result['error'] : __(
-                    'An error occurred during payment.',
-                    'payment4-woocommerce'
-                );
-                $this->order_note(
-                    $order,
-                    $paymentStatus,
-                    [
-                        "uid"              => $transaction_id,
-                        "url"              => "",
-                        "status"           => $paymentStatus,
-                        "amountDifference" => $amountDifference,
-                    ]
-                );
-            //$order->add_order_note($error . "<br/>Payment UID :  " . $transaction_id, 1);
+                ]);
+                break;
         }
 
-        $this->set_message($paymentStatus, $error . "<br/>Payment UID  :  " . $transaction_id, $redirect);
+        $this->order_note($order, $paymentStatus, [
+            "uid"              => $transaction_id,
+            "status"           => $paymentStatus,
+            "amountDifference" => $amountDifference,
+        ]);
+        $this->set_message($paymentStatus, $result['error'] . "<br/>Payment UID  :  " . $transaction_id, $redirect);
     }
 
-    public function payment_mismatch($order, $transaction_id = '' ) {
-        if ( ! $order->get_id() ) {
+    public function handle_payment4_status(WC_Order $order, string $type, string $transaction_id = '')
+    {
+        if ( ! $order->get_id()) {
             return false;
         }
 
         try {
-
-            if ( WC()->session ) {
-                WC()->session->set( 'order_awaiting_payment', false );
+            if (WC()->session) {
+                WC()->session->set('order_awaiting_payment', false);
             }
 
-            if ( ! empty( $transaction_id ) ) {
-                $order->set_transaction_id( $transaction_id );
+            if ( ! empty($transaction_id)) {
+                $order->set_transaction_id($transaction_id);
             }
 
-            $order->add_order_note( __( 'Payment mismatch detected by Payment4 plugin.', 'woocommerce' ) );
+            switch ($type) {
+                case 'acceptable':
+                    do_action('woocommerce_pre_payment_complete', $order->get_id(), $transaction_id);
 
-            $order->set_status( 'payment4-mismatch' );
+                    if ( ! $order->get_date_paid('edit')) {
+                        $order->set_date_paid(time());
+                    }
+
+                    $order->set_status('p4-acceptable');
+                    wc_reduce_stock_levels($order->get_id());
+
+                    do_action('woocommerce_order_status_payment4-acceptable', $order->get_id(), $order);
+                    do_action('woocommerce_payment_complete', $order->get_id(), $transaction_id);
+
+                    break;
+
+                case 'mismatch':
+                    $order->add_order_note(__('Payment mismatch detected by Payment4 plugin.', 'woocommerce'));
+                    $order->set_status('p4-mismatch');
+                    break;
+
+                default:
+                    $order->add_order_note(__('Unknown payment4 status handled.', 'woocommerce'));
+
+                    return false;
+            }
+
             $order->save();
-
-        } catch ( Exception $e ) {
+        } catch (Exception $e) {
             $logger = wc_get_logger();
             $logger->error(
-                sprintf(
-                    'Error handling payment mismatch for order #%d',
-                    $order->get_id()
-                ),
+                sprintf('Error handling payment4 status "%s" for order #%d', $type, $order->get_id()),
                 array(
                     'order' => $order,
                     'error' => $e,
                 )
             );
-            $order->add_order_note( __( 'Payment mismatch handling failed.', 'woocommerce' ) . ' ' . $e->getMessage() );
+
+            $order->add_order_note(
+                sprintf(__('Handling payment4 status "%s" failed.', 'woocommerce'), $type) . ' ' . $e->getMessage()
+            );
+
             return false;
         }
 
@@ -629,22 +742,22 @@ class WC_Payment4 extends WC_Payment_Gateway
                         if (empty($error)) {
                             $error = $payment_status === "acceptable" ? __(
                                 "Payment acceptable.",
-                                'payment4-woocommerce'
-                            ) : __("Payment successfull.", 'payment4-woocommerce');
+                                'payment4-gateway-pro'
+                            ) : __("Payment successfull.", 'payment4-gateway-pro');
                         }
                     } else {
                         $paymentStatus = $payment_status;
                         if (empty($error)) {
                             $error = $payment_status === "mismatch" ? __(
                                 "Payment mismatched.",
-                                'payment4-woocommerce'
-                            ) : __("Payment failed.", 'payment4-woocommerce');
+                                'payment4-gateway-pro'
+                            ) : __("Payment failed.", 'payment4-gateway-pro');
                         }
                     }
                 }
             }
         } else {
-            $error = __("Payment ID not found", 'payment4-woocommerce');
+            $error = __("Payment ID not found", 'payment4-gateway-pro');
         }
 
         $this->set_shortcodes(['transaction_id' => $transaction_id]);
@@ -846,7 +959,7 @@ class WC_Payment4 extends WC_Payment_Gateway
     {
         $callbackOrWebhook = $isCallback ? "_callback" : "_webhook";
         // Process return_url to extract base URL and query parameters
-        $parsed_url = parse_url(
+        $parsed_url        = parse_url(
             WC()->api_request_url(
                 get_class($this)
                 . $callbackOrWebhook
@@ -951,13 +1064,13 @@ class WC_Payment4 extends WC_Payment_Gateway
      */
     protected function set_message($status, $error = '', $redirect = false)
     {
-        if ( ! in_array($status, ['completed', 'success', 'accepted', 'mismatched', 'failed'])) {
+        if ( ! in_array($status, ['success', 'acceptable', 'mismatch', 'failed'])) {
             $status = 'failed';
         }
 
         wc_add_notice(
             $error,
-            $status == 'completed' || $status == 'accepted' || $status == 'success' ? 'success' : 'error'
+            $status == 'success' || $status == 'acceptable' ? 'success' : 'error'
         );
 
         if ($redirect !== false) {
@@ -973,21 +1086,16 @@ class WC_Payment4 extends WC_Payment_Gateway
 
     protected function order_note($order, $type, $data)
     {
+        $existing_notes = wc_get_order_notes(['order_id' => $order->get_id()]);
+        foreach ($existing_notes as $note) {
+            if (str_contains($note->content, $data['uid']) && ! str_contains($note->content, "Payment created")) {
+                return; // already added
+            }
+        }
+
         $sandbox = $this->option('sandbox') == '1';
 
-        $message = "";
-        if ($type === "created") {
-            $message .= "- Payment created <br/>";
-        }
-        if ($type === "success") {
-            $message .= "- Payment success <br/>";
-        }
-        if ($type === "failed") {
-            $message .= "- Payment failed <br/>";
-        }
-        if ($type === "mismatch") {
-            $message .= "- Payment mismatch <br/>";
-        }
+        $message = "Payment {$type}" . "<br/>";
 
         $message .= "- Sandbox mode : " . ($sandbox ? "true" : "false") . "<br/>";
 
@@ -1109,23 +1217,23 @@ class WC_Payment4 extends WC_Payment_Gateway
     protected function payment4_response_errors($errorCode)
     {
         $errors = [
-            1001 => __('callbackUrl must be a URL address in production mode', 'payment4-woocommerce'),
-            1002 => __('api key not send', 'payment4-woocommerce'),
-            1003 => __('api key not found', 'payment4-woocommerce'),
-            1004 => __('gateway not approved', 'payment4-woocommerce'),
-            1006 => __('payment not found', 'payment4-woocommerce'),
-            1010 => __('invalid amount', 'payment4-woocommerce'),
-            1012 => __('invalid currency', 'payment4-woocommerce'),
-            1005 => __('assets not found', 'payment4-woocommerce'),
-            1011 => __('payment amount lower than minimum', 'payment4-woocommerce'),
-            1013 => __('invalid language', 'payment4-woocommerce'),
+            1001 => __('callbackUrl must be a URL address in production mode', 'payment4-gateway-pro'),
+            1002 => __('api key not send', 'payment4-gateway-pro'),
+            1003 => __('api key not found', 'payment4-gateway-pro'),
+            1004 => __('gateway not approved', 'payment4-gateway-pro'),
+            1006 => __('payment not found', 'payment4-gateway-pro'),
+            1010 => __('invalid amount', 'payment4-gateway-pro'),
+            1012 => __('invalid currency', 'payment4-gateway-pro'),
+            1005 => __('assets not found', 'payment4-gateway-pro'),
+            1011 => __('payment amount lower than minimum', 'payment4-gateway-pro'),
+            1013 => __('invalid language', 'payment4-gateway-pro'),
         ];
 
         if (array_key_exists($errorCode, $errors)) {
             return $errors[$errorCode];
         }
 
-        return __('An error occurred during payment.', 'payment4-woocommerce');
+        return __('An error occurred during payment.', 'payment4-gateway-pro');
     }
 
     public function have_discount()
