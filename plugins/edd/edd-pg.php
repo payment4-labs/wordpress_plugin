@@ -187,8 +187,8 @@ class Payment4Edd
             'amount'         => $amount,
             'callbackUrl'    => $base_callback_url,
             'callbackParams' => $callback_params,
-//            'webhookUrl' => $base_webhook_url,
-//            'webhookParams' => $webhook_params,
+            'webhookUrl' => $base_webhook_url,
+            'webhookParams' => $webhook_params,
             'language'       => $this->get_language(),
         ];
 
@@ -231,14 +231,6 @@ class Payment4Edd
 
             $the_payment_id = edd_get_purchase_id_by_transaction_id($transaction_id);
 
-            $payment_status = edd_get_payment_status($the_payment_id);
-
-            if ($the_payment_id && in_array($payment_status, ['publish', 'complete'], true)) {
-                edd_empty_cart();
-
-                edd_send_to_success_page();
-            }
-
             $order_info = explode('-', $transaction_id);
             $payment_id = $order_info[1];
             $amount     = edd_get_payment_amount($payment_id);
@@ -255,17 +247,35 @@ class Payment4Edd
             $amount_difference       = ! empty($result['amountDifference']) ? $result['amountDifference'] : '0';
             $payment4_transaction_id = ! empty($result['transaction_id']) ? $result['transaction_id'] : '';
 
-            $payment          = new \EDD_Payment($payment_id);
+            $payment = new \EDD_Payment($payment_id);
             if ($payment_id && ($status === 'completed')) {
-                $note = sprintf(
-                    // translators: 1: Payment UID, 2: Payment status, 3: Amount difference
-                    __('Payment successful. Payment UID: %1$s, Status: %2$s, Amount Difference: %3$s', 'payment4-gateway-pro'),
-                    $payment4_transaction_id,
-                    $payment_status,
-                    $amount_difference
-                );
-
-                $payment->status = 'publish';
+                switch ($payment_status) {
+                    default:
+                        $note            = sprintf(
+                        // translators: 1: Payment UID, 2: Payment status
+                            __(
+                                'Payment Successful. <br> Payment UID: %1$s <br> Status: %2$s',
+                                'payment4-gateway-pro'
+                            ),
+                            $payment4_transaction_id,
+                            $payment_status,
+                        );
+                        $payment->status = 'publish';
+                        break;
+                    case 'acceptable':
+                        $note            = sprintf(
+                        // translators: 1: Payment UID, 2: Payment status, 3: Amount difference
+                            __(
+                                'Payment Acceptable. <br> Payment UID: %1$s <br> Status: %2$s <br> Amount Difference: %3$s',
+                                'payment4-gateway-pro'
+                            ),
+                            $payment4_transaction_id,
+                            $payment_status,
+                            $amount_difference
+                        );
+                        $payment->status = 'publish';
+                        break;
+                }
 
 
                 $payment->add_note($note);
@@ -273,18 +283,38 @@ class Payment4Edd
                 $payment->save();
 
                 edd_empty_cart();
-
+                edd_set_success('success_error', $note);
                 edd_send_to_success_page();
             } else {
-                $note = sprintf(
+                if ($payment_status == 'mismatch') {
+                    $payment->status = 'p4-mismatch';
+
+                    $note = sprintf(
                     // translators: 1: Payment UID, 2: Payment status, 3: Amount difference, 4: Error message
-                    __('Payment failed. Payment UID: %1$s, Status: %2$s, Amount Difference: %3$s, Error: %4$s', 'payment4-gateway-pro'),
-                    $payment4_transaction_id,
-                    $payment_status,
-                    $amount_difference,
-                    $result['error']
-                );
-                $payment->status = 'failed';
+                        __(
+                            'Payment Mismatched. <br> Payment UID: %1$s, <br> Status: %2$s, <br> Amount Difference: %3$s, <br> Error: %4$s',
+                            'payment4-gateway-pro'
+                        ),
+                        $payment4_transaction_id,
+                        $payment_status,
+                        $amount_difference,
+                        $result['error']
+                    );
+
+                } else {
+                    $payment->status = 'failed';
+                    $note            = sprintf(
+                    // translators: 1: Payment UID, 2: Payment status, 3: Amount difference, 4: Error message
+                        __(
+                            'Payment Failed. <br> Payment UID: %1$s, <br> Status: %2$s, <br> Amount Difference: %3$s, <br> Error: %4$s',
+                            'payment4-gateway-pro'
+                        ),
+                        $payment4_transaction_id,
+                        $payment_status,
+                        $amount_difference,
+                        $result['error']
+                    );
+                }
 
 
                 $payment->add_note($note);
@@ -292,8 +322,9 @@ class Payment4Edd
                 $payment->save();
 
                 edd_set_error('failed_payment', $note);
-
-                edd_send_back_to_checkout('?payment-mode=payment4');
+                $failedUrl = edd_get_failed_transaction_uri();
+                wp_safe_redirect($failedUrl);
+                exit;
             }
         }
     }
@@ -485,5 +516,42 @@ class Payment4Edd
     }
 
 }
+
+function payment4_custom_edd_payment_status($statuses)
+{
+    $statuses['p4-mismatch']   = 'Payment4 Mismatch';
+
+    return $statuses;
+}
+
+add_filter('edd_payment_statuses', 'payment4_custom_edd_payment_status');
+
+
+
+add_filter('the_content', function ($content) {
+    if (is_page(edd_get_option('failure_page', 0))) {
+        $message = edd_build_errors_html(edd_get_errors());
+
+        return $message . $content;
+    }
+
+    if (edd_is_success_page()) {
+        $message = edd_build_successes_html(EDD()->session->get('edd_success_errors'));
+
+        return $message . $content;
+    }
+
+    return $content;
+});
+
+add_action('admin_head', function () {
+    echo '<style>
+        /* رنگ بک‌گراند Mismatch */
+        .edd-status-badge--p4-mismatch {
+            background-color: #ff5e57 !important;
+            color: #ffffff !important;
+        }
+    </style>';
+});
 
 new Payment4Edd();
