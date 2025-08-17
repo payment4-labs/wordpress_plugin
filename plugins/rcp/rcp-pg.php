@@ -22,13 +22,6 @@ function payment4_rcp_register_gateway($gateways)
     return $gateways;
 }
 
-//// Load translations
-//add_action('plugins_loaded', 'payment4_rcp_load_textdomain');
-//function payment4_rcp_load_textdomain()
-//{
-//    load_plugin_textdomain('payment4-gateway-pro', false, dirname(plugin_basename(__FILE__)) . '/languages/');
-//}
-
 /**
  * Payment4 Payment Gateway for Restrict Content Pro
  */
@@ -142,8 +135,8 @@ class RCP_Payment_Gateway_Payment4 extends RCP_Payment_Gateway
             'amount'         => $amount,
             'callbackUrl'    => $base_callback_url,
             'callbackParams' => $callback_params,
-//            'webhookUrl' => $base_webhook_url,
-//            'webhookParams' => $webhook_params,
+            'webhookUrl' => $base_webhook_url,
+            'webhookParams' => $webhook_params,
             'language'       => $this->get_language(),
         ];
 
@@ -238,21 +231,62 @@ class RCP_Payment_Gateway_Payment4 extends RCP_Payment_Gateway
         $transaction_id    = ! empty($result['transaction_id']) ? $result['transaction_id'] : '';
 
         if ($status === 'completed') {
+            if ($payment_status == 'acceptable') {
+                remove_action('rcp_update_payment_status_complete', 'rcp_log_notes_on_payment_completion');
+                add_action('rcp_update_payment_status_complete', function ($payment_id) use ($amount_difference) {
+                    $payments = new RCP_Payments();
+                    $payment  = $payments->get_payment($payment_id);
+
+                    if (empty($payment)) {
+                        return;
+                    }
+
+                    $charge_type_slug = ! empty($payment->transaction_type) ? $payment->transaction_type : 'new';
+
+                    $note = sprintf(
+                        __(
+                            ' <strong> Acceptable </strong> payment for membership "%s"; Payment ID: #%d; Amount: %s; Gateway: %s; Type: %s; Amount Difference: %s',
+                            'rcp'
+                        ),
+                        rcp_get_subscription_name($payment->object_id),
+                        $payment->id,
+                        rcp_currency_filter($payment->amount),
+                        $payment->gateway,
+                        $charge_type_slug,
+                        $amount_difference
+                    );
+
+                    if ( ! empty($payment->customer_id) && $customer = rcp_get_customer($payment->customer_id)) {
+                        $customer->add_note($note);
+                    }
+
+                    if ( ! empty($payment->membership_id) && $membership = rcp_get_membership(
+                            $payment->membership_id
+                        )
+                    ) {
+                        $membership->add_note($note);
+                    }
+                });
+            }
+
             $rcp_payments_db->update($payment_id, [
                 'status'         => 'complete',
                 'transaction_id' => $transaction_id,
             ]);
+
+
+//
 
             $membership->renew(true, 'active');
 
             $membership->add_note(
                 sprintf(
                     __(
-                        'Payment successful. Payment UID: %1$s, Status: %2$s, Amount Difference: %3$s',
+                        'Payment <strong> %1$s </strong>; Payment ID: %2$s; Amount Difference: %3$s',
                         'payment4-gateway-pro'
                     ),
-                    $transaction_id,
                     $payment_status,
+                    $payment_id,
                     $amount_difference
                 )
             );
@@ -263,9 +297,10 @@ class RCP_Payment_Gateway_Payment4 extends RCP_Payment_Gateway
 
             $_SESSION['payment4_msg'] = sprintf(
                 __(
-                    'Payment successful. Payment UID: %1$s, Status: %2$s, Amount Difference: %3$s',
+                    'Payment %1$s. <br> Payment UID: %2$s <br> Status: %3$s <br> Amount Difference: %4$s',
                     'payment4-gateway-pro'
                 ),
+                $payment_status,
                 $transaction_id,
                 $payment_status,
                 $amount_difference
@@ -279,19 +314,58 @@ class RCP_Payment_Gateway_Payment4 extends RCP_Payment_Gateway
                 exit;
             }
         } else {
+            if ($payment_status == 'mismatch') {
+                add_action('rcp_update_payment_status_failed', function ($payment_id) use ($amount_difference) {
+                    $payments = new RCP_Payments();
+                    $payment  = $payments->get_payment($payment_id);
+
+                    if (empty($payment)) {
+                        return;
+                    }
+
+                    $charge_type_slug = ! empty($payment->transaction_type) ? $payment->transaction_type : 'new';
+
+                    $note = sprintf(
+                        __(
+                            ' <strong> Mismatch </strong> payment for membership "%s"; Payment ID: #%d; Amount: %s; Gateway: %s; Type: %s; Amount Difference: %s',
+                            'rcp'
+                        ),
+                        rcp_get_subscription_name($payment->object_id),
+                        $payment->id,
+                        rcp_currency_filter($payment->amount),
+                        $payment->gateway,
+                        $charge_type_slug,
+                        $amount_difference
+                    );
+
+                    if ( ! empty($payment->customer_id) && $customer = rcp_get_customer($payment->customer_id)) {
+                        $customer->add_note($note);
+                    }
+
+                    if ( ! empty($payment->membership_id) && $membership = rcp_get_membership(
+                            $payment->membership_id
+                        )
+                    ) {
+                        $membership->add_note($note);
+                    }
+                });
+            }
+
             $rcp_payments_db->update($payment_id, [
                 'status' => 'failed',
+                'transaction_id' => $transaction_id
             ]);
-            $membership->set_status('failed');
+
+            $membership->set_status('pending');
 
             $membership->add_note(
                 sprintf(
                     __(
-                        'Payment failed. Payment UID: %1$s, Status: %2$s, Amount Difference: %3$s, Error: %4$s',
+                        'Payment <strong> %1$s </strong>; Payment ID: %2$s; Amount Difference: %3$s; Error: %4$s',
                         'payment4-gateway-pro'
                     ),
-                    $transaction_id,
                     $payment_status,
+                    $payment_id,
                     $amount_difference,
                     $result['error']
                 )
@@ -303,9 +377,10 @@ class RCP_Payment_Gateway_Payment4 extends RCP_Payment_Gateway
 
             $_SESSION['payment4_msg'] = sprintf(
                 __(
-                    'Payment failed. Payment UID: %1$s, Status: %2$s, Amount Difference: %3$s, Error: %4$s',
+                    'Payment %1$s. <br> Payment UID: %2$s <br> Status: %3$s <br> Amount Difference: %4$s <br> Error: %5$s',
                     'payment4-gateway-pro'
                 ),
+                $payment_status,
                 $transaction_id,
                 $payment_status,
                 $amount_difference,
@@ -539,7 +614,7 @@ add_filter('the_content', function ($content) {
     }
 
     if ( ! empty($_SESSION['payment4_msg'])) {
-        $error_msg = esc_html($_SESSION['payment4_msg']);
+        $error_msg = wp_kses_post($_SESSION['payment4_msg']);
         unset($_SESSION['payment4_msg']); // فقط یه بار نمایش داده شه
 
         $msg_html = '<div style="padding: 20px; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 5px; margin-bottom: 20px; text-align: center;">' . $error_msg . '</div>';
