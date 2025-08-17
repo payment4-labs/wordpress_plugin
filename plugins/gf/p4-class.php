@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Main Add-On Class for Payment4
  */
@@ -84,6 +83,37 @@ class GFPayment4 extends GFPaymentAddOn
         add_filter('gform_currencies', [$this, 'supported_currencies']);
         add_filter('gform_validation_message', [$this, 'payment4_validation_message'], 10, 2);
         add_action("gform_post_payment_action", [$this, 'payment4_post_payment_action'], 10, 2);
+
+        add_filter( 'gform_entry_list_columns', function ($table_columns, $form_id){
+            $table_columns['field_id-payment_status'] = 'Payment4 Status';
+            return $table_columns;
+        }, 10, 2 );
+
+        add_filter( 'gform_entries_column_filter', function( $value, $form_id, $field_id, $entry ) {
+            if ( $field_id === 'payment_status' ) {
+                switch ( $value ) {
+                    case 'ACCEPTABLE':
+                        $color = '#0000FF'; // آبی
+                        break;
+                    case 'MISMATCH':
+                        $color = '#dc3545'; // قرمز
+                        break;
+                    case 'SUCCESS':
+                        $color = '#28a745'; // سبز
+                        break;
+                    default:
+                        $color = '#6c757d'; // خاکستری
+                        break;
+                }
+                $label = ucfirst( strtolower($value) );
+
+                return '<span style="font-weight:bold; color:' . esc_attr( $color ) . ';">' . esc_html( $label ) . '</span>';
+            }
+
+            return $value;
+        }, 10, 4 );
+
+
     }
 
     public function plugin_settings()
@@ -331,13 +361,13 @@ class GFPayment4 extends GFPaymentAddOn
         $code      = wp_remote_retrieve_response_code($response);
         $resp_body = wp_remote_retrieve_body($response);
         $result    = json_decode($resp_body, true);
-        // Assume verify success if HTTP 200 (Payment4 docs say 200 on success)
+
         if ($code == 200 && rgar($result, 'verified', false)) {
             $type    = 'complete_payment';
-            $message = rgar($result, 'paymentStatus');
+            $message = rgar($result, 'paymentStatus') . '; Amount Difference: ' . rgar($result, 'amountDifference', 0);
         } else {
             $type    = 'fail_payment';
-            $message = rgar($result, 'message', rgar($result, 'paymentStatus'));
+            $message = rgar($result, 'message', rgar($result, 'paymentStatus')) . '; Amount Difference: ' . rgar($result, 'amountDifference', 0);
         }
 
         return [
@@ -348,7 +378,7 @@ class GFPayment4 extends GFPaymentAddOn
             'amount'         => rgar($entry, 'payment_amount'),
             'note'           => $message,
             'payment_method' => $this->_short_title,
-            'payment_status' => $this->_short_title,
+            'payment_status' => rgar($result, 'paymentStatus'),
             'source_id'      => rgar($entry, 'source_id'),
         ];
     }
@@ -357,7 +387,6 @@ class GFPayment4 extends GFPaymentAddOn
     {
 
         // Define your message
-        $message = '';
         if (rgar($callback_action, 'type', 'fail_payment') == 'complete_payment') {
             $message = 'Your Payment Has Been Confirmed: ' . rgar($callback_action, 'note'); // Your success message
         } else {

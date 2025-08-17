@@ -14,8 +14,8 @@ if ( ! class_exists('GFPayment4_Bootstrap')) {
 
 
             // Include the Payment Add-On Framework
-            require_once 'p4-class.php';
             GFForms::include_payment_addon_framework();
+            require_once 'p4-class.php';
             // Register the add-on class
             GFAddOn::register('GFPayment4');
         }
