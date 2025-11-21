@@ -123,7 +123,7 @@ class Payment4CPG_GF_Gateway extends GFPaymentAddOn
 
     public function plugin_settings()
     {
-        $settings_url = admin_url('admin.php?page=payment4-gateway-pro');
+        $settings_url = admin_url('admin.php?page=payment4-crypto-payment-gateway');
         echo '<h2>' . esc_html__('To change Payment4 options (such as API key & Sandbox mode) visit', 'payment4-crypto-payment-gateway') . ' <a href="' . esc_url(
                 $settings_url
             ) . '" target="_blank">' . esc_html__('Payment4 Settings', 'payment4-crypto-payment-gateway') . '</a></h2>';

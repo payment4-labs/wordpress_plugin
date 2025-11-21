@@ -1,7 +1,7 @@
 const Pay4_settings = window.wc.wcSettings.getSetting( 'payment4cpg_wc_data', {} );
-const Pay4_label = window.wp.htmlEntities.decodeEntities( Pay4_settings.title ) || window.wp.i18n.__( '( Pay with Crypto )', 'payment4-gateway-pro' );
+const Pay4_label = window.wp.htmlEntities.decodeEntities( Pay4_settings.title ) || window.wp.i18n.__( '( Pay with Crypto )', 'payment4-crypto-payment-gateway' );
 const Pay4_Content = () => {
-    return window.wp.htmlEntities.decodeEntities( Pay4_settings.description || window.wp.i18n.__('Accepting Crypto Payments', 'payment4-gateway-pro') );
+    return window.wp.htmlEntities.decodeEntities( Pay4_settings.description || window.wp.i18n.__('Accepting Crypto Payments', 'payment4-crypto-payment-gateway') );
 };
 
 const Pay4_Icon = () => {

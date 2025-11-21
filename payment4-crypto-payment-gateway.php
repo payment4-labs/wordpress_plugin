@@ -40,7 +40,7 @@ function payment4cpg_redirect_to_settings_page() {
         delete_option('payment4_do_activation_redirect');
 
         if (current_user_can('manage_options') && ! isset($_GET['activate-multi'])) {
-            wp_safe_redirect(admin_url('admin.php?page=payment4-gateway-pro'));
+            wp_safe_redirect(admin_url('admin.php?page=payment4-crypto-payment-gateway'));
             exit;
         }
     }
@@ -51,7 +51,7 @@ function payment4cpg_redirect_to_settings_page() {
 add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'payment4cpg_add_settings_link');
 
 function payment4cpg_add_settings_link($links) {
-    $settings_link = '<a href="' . admin_url('admin.php?page=payment4-gateway-pro') . '">' . __('Settings', 'payment4-crypto-payment-gateway') . '</a>';
+    $settings_link = '<a href="' . admin_url('admin.php?page=payment4-crypto-payment-gateway') . '">' . __('Settings', 'payment4-crypto-payment-gateway') . '</a>';
     array_unshift($links, $settings_link);
     return $links;
 }

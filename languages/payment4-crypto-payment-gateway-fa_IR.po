@@ -1,38 +1,40 @@
 # Copyright (C) 2025 Payment4, Amirhossein Taghizadeh
-# This file is distributed under the GPLv3 or later.
+# This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Payment4 Gateway Pro (Woo, Gravity, RCP, EDD) 1.0.0\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/payment4-gateway-pro\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Project-Id-Version: Payment4 Crypto Payment gateway 3.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/payment4-crypto-payment-gateway\n"
+"Last-Translator: Amirhossein Taghizadeh <amyrosein@gmail.com>\n"
+"Language-Team: Persian <info@payment4.com>\n"
+"Language: fa_IR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-08-08T15:52:31+00:00\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.12.0\n"
-"X-Domain: payment4-gateway-pro\n"
+"POT-Creation-Date: 2025-11-21T00:00:00+00:00\n"
+"PO-Revision-Date: 2025-11-21 00:00+0000\n"
+"X-Generator: Manual\n"
+"X-Domain: payment4-crypto-payment-gateway\n"
+"Plural-Forms: nplurals=2; plural=(n==0 || n==1);\n"
 
 #. Plugin Name of the plugin
-#: payment4-gateway-pro.php
-msgid "Payment4 Gateway Pro (Woo, Gravity, RCP, EDD)"
-msgstr "درگاه پرداخت پیمنت ۴ پرو (Woo, Gravity, RCP, EDD)"
+msgid "Payment4 Crypto Payment gateway"
+msgstr "درگاه پرداخت کریپتو پیمنت۴"
 
 #. Description of the plugin
-#: payment4-gateway-pro.php
 msgid "Crypto Payment Gateway integration with WooCommerce, RCP, EDD, and Gravity Forms."
-msgstr "درگاه پرداخت پیمنت۴ برای افزونه های WooCommerce, RCP, EDD و Gravity Forms"
+msgstr "درگاه پرداخت کریپتو پیمنت۴ برای افزونه های WooCommerce, RCP, EDD و Gravity Forms"
 
 #. Author of the plugin
-#: payment4-gateway-pro.php
 msgid "Payment4, Amirhossein Taghizadeh"
 msgstr "پیمنت۴، امیرحسین تقی‌زاده"
 
 #. Author URI of the plugin
-#: payment4-gateway-pro.php
 msgid "https://payment4.com"
 msgstr ""
+
+#: payment4-crypto-payment-gateway.php:58
+msgid "Settings"
+msgstr "تنظیمات"
 
 #: admin/views/general-settings.php:8
 msgid "Save Settings"
@@ -71,12 +73,21 @@ msgid "API Key"
 msgstr "کلید API"
 
 #: includes/register-settings.php:35
+#: includes/register-settings.php:42
 msgid "SandBox Mode"
 msgstr "حالت سندباکس"
 
-#: includes/register-settings.php:50
+#: includes/register-settings.php:42
+msgid "SandBox"
+msgstr "سندباکس"
+
+#: includes/register-settings.php:55
 msgid "Select Active Plugins"
 msgstr "پلاگین های فعال را انتخاب کنید"
+
+#: includes/register-settings.php:136
+msgid "Settings saved successfully."
+msgstr "تنظیمات با موفقیت ذخیره شد."
 
 #: plugins/edd/edd-pg.php:51
 #: plugins/rcp/rcp-pg.php:16
@@ -116,13 +127,21 @@ msgstr "پرداخت ناموفق بود. شناسه پرداخت: %1$s، وضع
 msgid "Iranian Toman (IRT)"
 msgstr "تومان ایران (IRT)"
 
-#: plugins/gf/p4-class.php:92
+#: plugins/gf/p4-class.php:122
 msgid "To change Payment4 options (such as API key & Sandbox mode) visit"
 msgstr "برای تغییر تنظیمات پیمنت۴ به صفحه تنظیمات مراجعه کنید: "
 
-#: plugins/gf/p4-class.php:94
+#: plugins/gf/p4-class.php:122
 msgid "Payment4 Settings"
 msgstr "تنظیمات پیمنت۴"
+
+#: plugins/gf/p4-class.php:328
+msgid "paymentUid or formId missing"
+msgstr "شناسه پرداخت یا شناسه فرم وجود ندارد"
+
+#: plugins/gf/p4-class.php:337
+msgid "Entry missing"
+msgstr "ورودی وجود ندارد"
 
 #: plugins/rcp/rcp-pg.php:73
 msgid "Payment4 API Key is missing."
@@ -136,14 +155,14 @@ msgstr "ارز مورد نظر توسط پیمنت۴ پشتیبانی نمیشو
 msgid "Payment record not found."
 msgstr "رکورد پرداخت پیدا نشد."
 
-#. translators: %s is the membership ID.
-#: plugins/rcp/rcp-pg.php:101
+#. translators: %s: Membership ID
+#: plugins/rcp/rcp-pg.php:94
 #, php-format
 msgid "Membership #%s"
 msgstr "عضویت شماره‌ی #%s"
 
-#. translators: 1: Payment UID, 2: Payment URL.
-#: plugins/rcp/rcp-pg.php:194
+#. translators: 1: Payment UID, 2: Payment URL
+#: plugins/rcp/rcp-pg.php:187
 #, php-format
 msgid "Payment created. Payment UID: %1$s, Payment URL: %2$s"
 msgstr "پرداخت ایجاد شد. شناسه پرداخت: %1$s, لینک پرداخت: %2$s"
@@ -152,70 +171,124 @@ msgstr "پرداخت ایجاد شد. شناسه پرداخت: %1$s, لینک پ
 msgid "Unable to redirect to Payment4 payment page."
 msgstr "امکان هدایت به صفحه پرداخت پیمنت۴ وجود ندارد."
 
-#: plugins/rcp/rcp-pg.php:377
+#. translators: 1: Membership name, 2: Payment ID, 3: Amount paid, 4: Gateway name, 5: Payment type, 6: Amount difference
+#: plugins/rcp/rcp-pg.php:247
+#, php-format
+msgid " <strong> Acceptable </strong> payment for membership \"%1$s\"; Payment ID: #%2$d; Amount: %3$s; Gateway: %4$s; Type: %5$s; Amount Difference: %6$s"
+msgstr " پرداخت <strong> قابل قبول </strong> برای عضویت \"%1$s\"; شناسه پرداخت: #%2$d; مبلغ: %3$s; درگاه: %4$s; نوع: %5$s; اختلاف مبلغ: %6$s"
+
+#. translators: 1: Payment status, 2: Payment ID, 3: Amount difference
+#: plugins/rcp/rcp-pg.php:286
+#, php-format
+msgid "Payment <strong> %1$s </strong>; Payment ID: %2$s; Amount Difference: %3$s"
+msgstr "پرداخت <strong> %1$s </strong>; شناسه پرداخت: %2$s; اختلاف مبلغ: %3$s"
+
+#. translators: 1: Payment status, 2: Payment UID, 3: Payment status, 4: Amount difference
+#: plugins/rcp/rcp-pg.php:302
+#, php-format
+msgid "Payment %1$s. <br> Payment UID: %2$s <br> Status: %3$s <br> Amount Difference: %4$s"
+msgstr "پرداخت %1$s. <br> شناسه پرداخت: %2$s <br> وضعیت: %3$s <br> اختلاف مبلغ: %4$s"
+
+#. translators: 1: Membership name, 2: Payment ID, 3: Amount paid, 4: Gateway name, 5: Payment type, 6: Amount difference
+#: plugins/rcp/rcp-pg.php:330
+#, php-format
+msgid " <strong> Mismatch </strong> payment for membership \"%1$s\"; Payment ID: #%2$d; Amount: %3$s; Gateway: %4$s; Type: %5$s; Amount Difference: %6$s"
+msgstr " پرداخت <strong> میس‌مچ </strong> برای عضویت \"%1$s\"; شناسه پرداخت: #%2$d; مبلغ: %3$s; درگاه: %4$s; نوع: %5$s; اختلاف مبلغ: %6$s"
+
+#. translators: 1: Payment status, 2: Payment ID, 3: Amount difference, 4: Error message
+#: plugins/rcp/rcp-pg.php:367
+#, php-format
+msgid "Payment <strong> %1$s </strong>; Payment ID: %2$s; Amount Difference: %3$s; Error: %4$s"
+msgstr "پرداخت <strong> %1$s </strong>; شناسه پرداخت: %2$s; اختلاف مبلغ: %3$s; خطا: %4$s"
+
+#. translators: 1: Payment status, 2: Payment UID, 3: Payment status, 4: Amount difference, 5: Error message
+#: plugins/rcp/rcp-pg.php:383
+#, php-format
+msgid "Payment %1$s. <br> Payment UID: %2$s <br> Status: %3$s <br> Amount Difference: %4$s <br> Error: %5$s"
+msgstr "پرداخت %1$s. <br> شناسه پرداخت: %2$s <br> وضعیت: %3$s <br> اختلاف مبلغ: %4$s <br> خطا: %5$s"
+
+#: plugins/rcp/rcp-pg.php:403
 #: plugins/woo/class-wc-gateway-payment4.php:743
 msgid "Payment acceptable."
 msgstr "پرداخت قابل قبول."
 
-#: plugins/rcp/rcp-pg.php:380
+#: plugins/rcp/rcp-pg.php:406
 msgid "Payment successful."
 msgstr "پرداخت موفق."
 
-#: plugins/rcp/rcp-pg.php:385
+#: plugins/rcp/rcp-pg.php:411
 msgid "Payment mismatched."
 msgstr "پرداخت میس مچ."
 
-#: plugins/rcp/rcp-pg.php:388
+#: plugins/rcp/rcp-pg.php:414
 msgid "Payment failed."
 msgstr "پرداخت ناموفق."
 
-#: plugins/rcp/rcp-pg.php:396
+#: plugins/rcp/rcp-pg.php:422
 msgid "Payment ID not found"
 msgstr "شناسه پرداخت پیدا نشد."
 
-#: plugins/rcp/rcp-pg.php:452
+#: plugins/rcp/rcp-pg.php:478
 msgid "Callback or Webhook URL must be a valid URL in production mode."
 msgstr "لینک کال‌بک یا وب‌هوک در حالت پروداکشن باید یک URL معتبر باشد."
 
-#: plugins/rcp/rcp-pg.php:453
+#: plugins/rcp/rcp-pg.php:479
 msgid "API key not provided."
 msgstr "کلید API ارائه نشده است."
 
-#: plugins/rcp/rcp-pg.php:454
+#: plugins/rcp/rcp-pg.php:480
 msgid "API key not found."
 msgstr "کلید API پیدا نشد."
 
-#: plugins/rcp/rcp-pg.php:455
+#: plugins/rcp/rcp-pg.php:481
 msgid "Gateway not approved."
 msgstr "درگاه پرداخت مورد قبول نیست."
 
-#: plugins/rcp/rcp-pg.php:456
+#: plugins/rcp/rcp-pg.php:482
 msgid "Payment not found."
 msgstr "پرداخت پیدا نشد."
 
-#: plugins/rcp/rcp-pg.php:457
+#: plugins/rcp/rcp-pg.php:483
 msgid "Invalid amount."
 msgstr "مبلغ نامعتبر."
 
-#: plugins/rcp/rcp-pg.php:458
+#: plugins/rcp/rcp-pg.php:484
 msgid "Invalid currency."
 msgstr "ارز نامعتبر."
 
-#: plugins/rcp/rcp-pg.php:459
+#: plugins/rcp/rcp-pg.php:485
 msgid "Assets not found."
 msgstr "دارایی‌ها پیدا نشدند."
 
-#: plugins/rcp/rcp-pg.php:460
+#: plugins/rcp/rcp-pg.php:486
 msgid "Payment amount lower than minimum."
 msgstr "مبلغ پرداخت کمتر از مجاز است."
 
-#: plugins/rcp/rcp-pg.php:461
+#: plugins/rcp/rcp-pg.php:487
 msgid "Invalid language."
 msgstr "زبان نامعتبر."
 
-#: plugins/rcp/rcp-pg.php:464
+#: plugins/rcp/rcp-pg.php:490
 msgid "An error occurred during payment."
 msgstr "خطایی هنگام پرداخت رخ داده است."
+
+#: plugins/rcp/rcp-pg.php:585
+msgid "تومان ایران (تومان)"
+msgstr "تومان ایران (تومان)"
+
+#: plugins/rcp/rcp-pg.php:586
+msgid "ریال ایران (ریال)"
+msgstr "ریال ایران (ریال)"
+
+#: plugins/rcp/rcp-pg.php:599
+#: plugins/rcp/rcp-pg.php:604
+msgid "ریال"
+msgstr "ریال"
+
+#: plugins/rcp/rcp-pg.php:609
+#: plugins/rcp/rcp-pg.php:614
+msgid "تومان"
+msgstr "تومان"
 
 #: plugins/woo/class-wc-gateway-payment4.php:41
 msgid "Gateway settings for WooCommerce"
@@ -226,37 +299,30 @@ msgstr "تنظیمات درگاه برای ووکامرس"
 msgid "( Pay with Crypto )"
 msgstr "( پرداخت با کریپتو )"
 
-#. translators: %s is replaced with "string"
+#. translators: %s: Discount percentage
 #: plugins/woo/class-wc-gateway-payment4.php:66
 #, php-format
 msgid "Get %s Percent Discount for paying by Payment4"
 msgstr "دریافت %s درصد تخفیف درصورت پرداخت با پیمنت۴"
 
-#: plugins/woo/class-wc-gateway-payment4.php:105
-msgid "⛔ Your order was not completed due to a payment mismatch. Please contact support."
-msgstr "⛔ سفارش شما به دلیل مغایرت در مبلغ نهایی ثبت نشد. لطفاً با پشتیبانی تماس بگیرید."
-
-#: plugins/woo/class-wc-gateway-payment4.php:109
-msgid "⚠️ Your order was received, but the payment amount was not exact. Your order is under review."
-msgstr "⚠️ سفارش شما با موفقیت ثبت شد، اما مبلغ پرداختی دقیق نبود. سفارش در حال بررسی است"
-
-#: plugins/woo/class-wc-gateway-payment4.php:126
+#: plugins/woo/class-wc-gateway-payment4.php:132
 msgid "⛔ Your order was not completed due to a payment mismatch.<br/>Please contact support."
 msgstr "⛔ سفارش شما به دلیل مغایرت در مبلغ نهایی ثبت نشد.<br/>لطفاً با پشتیبانی تماس بگیرید"
 
-#: plugins/woo/class-wc-gateway-payment4.php:132
-msgid "⚠️ Your order was received, but the payment amount was not exact.<br/>Please wait while we review it."
-msgstr "⚠️ سفارش شما ثبت شد، اما مبلغ پرداختی با مبلغ مورد انتظار متفاوت بود.<br/>لطفاً منتظر بررسی باشید."
+#: plugins/woo/class-wc-gateway-payment4.php:141
+msgid "⚠ Your order was received, but the payment amount was not exact.<br/>Please wait while we review it."
+msgstr "⚠ سفارش شما ثبت شد، اما مبلغ پرداختی با مبلغ مورد انتظار متفاوت بود.<br/>لطفاً منتظر بررسی باشید."
 
-#: plugins/woo/class-wc-gateway-payment4.php:196
-#: plugins/woo/class-wc-gateway-payment4.php:226
+#. translators: %s: Discount percentage
+#: plugins/woo/class-wc-gateway-payment4.php:212
+#: plugins/woo/class-wc-gateway-payment4.php:242
 #, php-format
 msgid "Payment4 Crypto Discount (%s%%)"
 msgstr "تخفیف پیمنت۴ (%s%%)"
 
 #: plugins/woo/class-wc-gateway-payment4.php:283
 msgid "Enable/Disable"
-msgstr "فعال\غیرفعال"
+msgstr "فعال/غیرفعال"
 
 #: plugins/woo/class-wc-gateway-payment4.php:285
 msgid "Activation of the payment gateway"
@@ -264,7 +330,7 @@ msgstr "فعالسازی درگاه پرداخت"
 
 #: plugins/woo/class-wc-gateway-payment4.php:286
 msgid "Tick the checkbox to activate"
-msgstr "حهت فعالسازی کلیک کنید"
+msgstr "جهت فعالسازی کلیک کنید"
 
 #: plugins/woo/class-wc-gateway-payment4.php:294
 #: plugins/woo/class-wc-gateway-payment4.php:302
@@ -277,15 +343,15 @@ msgstr "حالت سندباکس"
 
 #: plugins/woo/class-wc-gateway-payment4.php:303
 msgid "Enable/Disable Sandbox mode"
-msgstr "فعال\غیرفعال حالت سندباکس"
+msgstr "فعال/غیرفعال حالت سندباکس"
 
 #: plugins/woo/class-wc-gateway-payment4.php:309
 msgid "Title"
-msgstr "تیتر"
+msgstr "عنوان"
 
 #: plugins/woo/class-wc-gateway-payment4.php:311
 msgid "Gateway title"
-msgstr "تیتر درگاه"
+msgstr "عنوان درگاه"
 
 #: plugins/woo/class-wc-gateway-payment4.php:316
 msgid "Description"
@@ -356,13 +422,19 @@ msgstr "شماره سفارش پیدا نشد."
 msgid "The status of the transaction has already been determined."
 msgstr "وضعیت تراکنش قبلا مشخص شده است."
 
+#. translators: %s: Payment status type
+#: plugins/woo/class-wc-gateway-payment4.php:697
+#, php-format
+msgid "Handling payment4 status \"%s\" failed."
+msgstr "خطا در پردازش وضعیت پیمنت۴ \"%s\"."
+
 #: plugins/woo/class-wc-gateway-payment4.php:746
 msgid "Payment successfull."
 msgstr "پرداخت موفق."
 
 #: plugins/woo/class-wc-gateway-payment4.php:1220
 msgid "callbackUrl must be a URL address in production mode"
-msgstr "لینک کالبک باید یک آدرس در پروداکشن باشد."
+msgstr "لینک کالبک باید یک آدرس معتبر در حالت پروداکشن باشد."
 
 #: plugins/woo/class-wc-gateway-payment4.php:1221
 msgid "api key not send"
@@ -400,8 +472,34 @@ msgstr "مبلغ پرداخت کمتر از حداقل است."
 msgid "invalid language"
 msgstr "زبان نامعتبر."
 
-msgid "Settings"
-msgstr "تنظیمات"
+#: plugins/woo/index.php:159
+msgctxt "Order status"
+msgid "Payment4 Acceptable"
+msgstr "پیمنت۴ قابل قبول"
 
-msgid "Settings saved successfully."
-msgstr "تنظیمات با موفقیت ذخیره شد."
+#. translators: %1$s: Number of orders
+#: plugins/woo/index.php:165
+msgctxt "Order status"
+msgid "Payment4 Acceptable <span class=\"count\">(%1$s)</span>"
+msgid_plural "Payment4 Acceptables <span class=\"count\">(%1$s)</span>"
+msgstr[0] "پیمنت۴ قابل قبول <span class=\"count\">(%1$s)</span>"
+msgstr[1] "پیمنت۴ قابل قبول <span class=\"count\">(%1$s)</span>"
+
+#: plugins/woo/index.php:173
+msgctxt "Order status"
+msgid "Payment4 Mismatch"
+msgstr "پیمنت۴ میس‌مچ"
+
+#. translators: %1$s: Number of orders
+#: plugins/woo/index.php:177
+msgctxt "Order status"
+msgid "Payment4 Mismatch <span class=\"count\">(%1$s)</span>"
+msgid_plural "Payment4 Mismatches <span class=\"count\">(%1$s)</span>"
+msgstr[0] "پیمنت۴ میس‌مچ <span class=\"count\">(%1$s)</span>"
+msgstr[1] "پیمنت۴ میس‌مچ <span class=\"count\">(%1$s)</span>"
+
+#: plugins/woo/index.php:189
+#: plugins/woo/index.php:190
+msgctxt "Order status"
+msgid "Payment4 Acceptable"
+msgstr "پیمنت۴ قابل قبول"
