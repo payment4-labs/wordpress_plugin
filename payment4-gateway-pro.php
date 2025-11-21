@@ -1,6 +1,6 @@
 <?php
 /*
- * Plugin Name: Payment4 Gateway Pro (Woo, Gravity, RCP, EDD)
+ * Plugin Name: Payment4 Crypto Payment gateway
  * Description: Crypto Payment Gateway integration with WooCommerce, RCP, EDD, and Gravity Forms.
  * Version: 3.0.0
  * Author: Payment4, Amirhossein Taghizadeh
