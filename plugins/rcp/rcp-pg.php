@@ -245,7 +245,7 @@ class Payment4CPG_RCP_Gateway extends RCP_Payment_Gateway
 
                     $note = sprintf(
                         __(
-                            ' <strong> Acceptable </strong> payment for membership "%s"; Payment ID: #%d; Amount: %s; Gateway: %s; Type: %s; Amount Difference: %s',
+                            ' <strong> Acceptable </strong> payment for membership "%1$s"; Payment ID: #%2$d; Amount: %3$s; Gateway: %4$s; Type: %5$s; Amount Difference: %6$s',
                             'payment4-crypto-payment-gateway'
                         ),
                         rcp_get_subscription_name($payment->object_id),
@@ -327,7 +327,7 @@ class Payment4CPG_RCP_Gateway extends RCP_Payment_Gateway
 
                     $note = sprintf(
                         __(
-                            ' <strong> Mismatch </strong> payment for membership "%s"; Payment ID: #%d; Amount: %s; Gateway: %s; Type: %s; Amount Difference: %s',
+                            ' <strong> Mismatch </strong> payment for membership "%1$s"; Payment ID: #%2$d; Amount: %3$s; Gateway: %4$s; Type: %5$s; Amount Difference: %6$s',
                             'payment4-crypto-payment-gateway'
                         ),
                         rcp_get_subscription_name($payment->object_id),
