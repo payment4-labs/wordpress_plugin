@@ -544,14 +544,20 @@ add_filter('the_content', function ($content) {
     return $content;
 });
 
-add_action('admin_head', function () {
-    echo '<style>
+add_action('admin_enqueue_scripts', function () {
+    // Register a dummy handle to attach inline styles
+    wp_register_style('payment4-edd-status', false);
+    wp_enqueue_style('payment4-edd-status');
+
+    $custom_css = '
         /* رنگ بک‌گراند Mismatch */
         .edd-status-badge--p4-mismatch {
             background-color: #ff5e57 !important;
             color: #ffffff !important;
         }
-    </style>';
+    ';
+
+    wp_add_inline_style('payment4-edd-status', $custom_css);
 });
 
 new Payment4Edd();

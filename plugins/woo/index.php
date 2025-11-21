@@ -190,14 +190,18 @@ add_action('admin_enqueue_scripts', function () {
     $screen = get_current_screen();
 
     if (isset($screen->id) && strpos($screen->id, 'wc-orders') !== false) {
-        add_action('admin_head', 'payment4_custom_order_status_colors');
+        payment4_enqueue_order_status_styles();
     }
 });
 
-function payment4_custom_order_status_colors() {
+function payment4_enqueue_order_status_styles() {
     if (!is_admin()) return;
 
-    echo '<style>
+    // Register a dummy handle to attach inline styles
+    wp_register_style('payment4-order-status', false);
+    wp_enqueue_style('payment4-order-status');
+
+    $custom_css = '
         .order-status.status-p4-mismatch {
             background-color: #ff5e57 !important;
             color: #ffffff !important;
@@ -215,5 +219,7 @@ function payment4_custom_order_status_colors() {
         .status-p4-acceptable td, .status-p4-acceptable th {
             background-color: #f4fff4 !important;
         }
-    </style>';
+    ';
+
+    wp_add_inline_style('payment4-order-status', $custom_css);
 }

@@ -1220,15 +1220,14 @@ class WC_Payment4 extends WC_Payment_Gateway
     protected function redirect($url)
     {
         if ( ! headers_sent()) {
-            // Use esc_url_raw for URLs in header redirects
-            header('Location: ' . esc_url_raw(trim($url)));
+            // Use wp_safe_redirect for proper WordPress redirect
+            wp_safe_redirect(trim($url));
         } else {
-            // Use esc_js and esc_url for safe JavaScript output
-            $RedirectforPay = "<script type='text/javascript'>window.onload = function () { top.location.href = '" . esc_js(
+            // Use wp_print_inline_script_tag for safe JavaScript output (WordPress 5.7+)
+            $redirect_script = "window.onload = function () { top.location.href = '" . esc_js(
                     esc_url($url)
-                ) . "'; };</script>";
-            // Output the script safely
-            echo wp_kses($RedirectforPay, ['script' => ['type' => []]]);
+                ) . "'; };";
+            wp_print_inline_script_tag($redirect_script);
         }
         exit;
     }
