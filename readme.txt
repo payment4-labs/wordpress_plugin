@@ -75,6 +75,44 @@ Once you have installed and activated the plugin, navigate to the Payment4 setti
 = Which cryptocurrencies are supported? =
 Payment4 supports a wide range of cryptocurrencies. For a full list of supported cryptocurrencies, visit the documentation page at [Payment4 Documentation](https://payment4.com).
 
+== External Services ==
+
+This plugin relies on the Payment4 API, a third-party external service, to process cryptocurrency payments. The plugin will not function without connecting to this service.
+
+= What is the Payment4 API? =
+Payment4 (https://payment4.com) is a cryptocurrency payment gateway service that processes crypto transactions, monitors blockchain confirmations, and manages payment verification.
+
+= When does the plugin connect to Payment4 services? =
+The plugin connects to Payment4 external services in the following situations:
+
+1. **During Checkout** - When a customer selects Payment4 as their payment method and proceeds to pay
+2. **Payment Verification** - When verifying that a cryptocurrency payment has been received and confirmed on the blockchain
+3. **Payment Callbacks** - When Payment4 sends webhook notifications about payment status updates
+4. **Language Files** - When loading translation files for the plugin interface
+
+= What data is transmitted? =
+When processing payments, the following data is sent to Payment4 services:
+
+* Order amount and currency
+* Order ID and description
+* Customer email address (optional, for payment notifications)
+* Return and callback URLs for your website
+* API credentials (API key) for authentication
+
+No sensitive financial information (credit card details, bank accounts, etc.) is transmitted. Cryptocurrency transactions are handled directly on the blockchain.
+
+= Service Endpoints Used =
+* **Payment API**: https://service.payment4.com/api/v1/payment
+* **Verification API**: https://service.payment4.com/api/v1/payment/verify
+* **Currency Data**: https://storage.payment4.com/wp/currencies.json
+* **Language Files**: https://storage.payment4.com/wp/languages.json
+
+= Legal & Privacy =
+* **Terms of Service**: https://payment4.com/terms-of-service
+* **Privacy Policy**: https://payment4.com/privacy-policy
+
+By using this plugin, you acknowledge that data will be transmitted to Payment4's servers for payment processing. Please review Payment4's terms of service and privacy policy to understand how your data is handled.
+
 == Changelog ==
 
 = 3.0.0 =
