@@ -129,18 +129,22 @@ class WC_Payment4 extends WC_Payment_Gateway
 
         if ($status === 'p4-mismatch') {
             echo '<div class="woocommerce-message">';
-            echo __(
-                '⛔ Your order was not completed due to a payment mismatch.<br/>Please contact support.',
-                'payment4-crypto-payment-gateway'
+            echo wp_kses_post(
+                __(
+                    '⛔ Your order was not completed due to a payment mismatch.<br/>Please contact support.',
+                    'payment4-crypto-payment-gateway'
+                )
             );
             echo '</div>';
         }
 
         if ($status === 'p4-acceptable') {
             echo '<div class="woocommerce-message" >';
-            echo __(
-                '⚠️ Your order was received, but the payment amount was not exact.<br/>Please wait while we review it.',
-                'payment4-crypto-payment-gateway'
+            echo wp_kses_post(
+                __(
+                    '⚠️ Your order was received, but the payment amount was not exact.<br/>Please wait while we review it.',
+                    'payment4-crypto-payment-gateway'
+                )
             );
             echo '</div>';
         }

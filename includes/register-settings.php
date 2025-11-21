@@ -36,7 +36,12 @@ function payment4_register_settings()
         function () {
             $options = get_option('payment4_gateway_pro_settings');
             $checked = !empty($options['sandbox_mode']) ? 'checked' : '';
-            echo "<label><input type='checkbox' name='payment4_gateway_pro_settings[sandbox_mode]' value='1' $checked> SandBox</label><br>";
+            ?>
+            <label>
+                <input type='checkbox' name='payment4_gateway_pro_settings[sandbox_mode]' value='1' <?php echo esc_attr($checked); ?>>
+                <?php echo esc_html__('SandBox', 'payment4-crypto-payment-gateway'); ?>
+            </label><br>
+            <?php
         },
         'payment4_gateway_pro',
         'payment4_main_section'
@@ -66,7 +71,12 @@ function payment4_register_settings()
 
             foreach ($plugins as $key => $label) {
                 $checked = !empty($options[$key]) ? 'checked' : '';
-                echo "<label><input type='checkbox' name='payment4_gateway_pro_plugins[$key]' value='1' $checked> $label</label><br>";
+                ?>
+                <label>
+                    <input type='checkbox' name='payment4_gateway_pro_plugins[<?php echo esc_attr($key); ?>]' value='1' <?php echo esc_attr($checked); ?>>
+                    <?php echo esc_html($label); ?>
+                </label><br>
+                <?php
             }
         },
         'payment4_plugins',
@@ -83,7 +93,7 @@ function payment4_admin_settings_notice()
         ($_GET['page'] === 'payment4-crypto-payment-gateway' || $_GET['page'] === 'payment4-gateway-pro-plugins')
     ) {
         echo '<div class="notice notice-success is-dismissible">
-            <p>' . __('Settings saved successfully.', 'payment4-crypto-payment-gateway') . '</p>
+            <p>' . esc_html__('Settings saved successfully.', 'payment4-crypto-payment-gateway') . '</p>
         </div>';
     }
 }
