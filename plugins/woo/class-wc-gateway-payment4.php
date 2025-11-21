@@ -273,6 +273,16 @@ class WC_Payment4 extends WC_Payment_Gateway
                 '1.0',
                 true
             );
+
+            // Localize script to pass Ajax URL and nonce
+            wp_localize_script(
+                'payment4_custom',
+                'payment4Ajax',
+                array(
+                    'ajax_url' => admin_url( 'admin-ajax.php' ),
+                    'nonce'    => wp_create_nonce( 'payment4-checkout-nonce' ),
+                )
+            );
         }
     }
 

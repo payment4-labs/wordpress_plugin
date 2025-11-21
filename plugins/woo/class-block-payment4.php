@@ -37,6 +37,16 @@ final class WC_Payment4_Blocks extends AbstractPaymentMethodType
             true
         );
 
+        // Localize script to pass Ajax URL and nonce
+        wp_localize_script(
+            'wc-payment4-blocks-integration',
+            'payment4Ajax',
+            array(
+                'ajax_url' => admin_url( 'admin-ajax.php' ),
+                'nonce'    => wp_create_nonce( 'payment4-checkout-nonce' ),
+            )
+        );
+
         return array( 'wc-payment4-blocks-integration' );
 
     }

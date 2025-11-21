@@ -154,31 +154,13 @@ jQuery(document).ready(function($) {
         if (typeof wc_checkout_params !== 'undefined') {
             ajaxUrl = wc_checkout_params.ajax_url;
             nonce = wc_checkout_params.update_order_review_nonce;
+        } else if (typeof payment4Ajax !== 'undefined') {
+            // Use localized Payment4 Ajax URL and nonce
+            ajaxUrl = payment4Ajax.ajax_url;
+            nonce = payment4Ajax.nonce;
         } else {
-            // Updated to use a Payment4 specific variable
-            if (window.payment4AjaxUrl) {
-                ajaxUrl = window.payment4AjaxUrl;
-            } else if (typeof wc_settings !== 'undefined' && wc_settings.admin_url) {
-                ajaxUrl = wc_settings.admin_url + 'admin-ajax.php';
-            } else if (typeof wcSettings !== 'undefined' && wcSettings.adminUrl) {
-                ajaxUrl = wcSettings.adminUrl + 'admin-ajax.php';
-            } else {
-                var iconUrl = settings.icon || '';
-                if (iconUrl.includes('/wp-content/')) {
-                    var basePath = iconUrl.split('/wp-content/')[0];
-                    ajaxUrl = basePath + '/wp-admin/admin-ajax.php';
-                } else {
-                    var currentHost = window.location.origin;
-                    var possiblePaths = [
-                        currentHost + '/wp-admin/admin-ajax.php',
-                        currentHost + '/wordpress/wp-admin/admin-ajax.php',
-                        currentHost + window.location.pathname.split('/')[1] + '/wp-admin/admin-ajax.php'
-                    ];
-                    ajaxUrl = possiblePaths[0];
-                }
-            }
-            // Updated to use the new nonce for Payment4
-            nonce = 'payment4_checkout_nonce';
+            // Fallback for other cases
+            return;
         }
 
         $.post(ajaxUrl, {
