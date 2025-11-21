@@ -2,7 +2,7 @@
 /*
  * Plugin Name: Payment4 Crypto Payment gateway
  * Description: Crypto Payment Gateway integration with WooCommerce, RCP, EDD, and Gravity Forms.
- * Version: 3.0.0
+ * Version: 3.0.1
  * Author: Payment4, Amirhossein Taghizadeh
  * Author URI: https://payment4.com
  * Text Domain: payment4-crypto-payment-gateway
@@ -10,7 +10,7 @@
  * Requires at least: 6.0
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Stable tag: 3.0.0
+ * Stable tag: 3.0.1
  */
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.

@@ -4,7 +4,7 @@ Tags: woocommerce, cryptocurrency, payment-gateway, edd, gravity-forms
 Requires at least: 6.0
 Requires PHP: 7.0
 Tested up to: 6.8
-Stable tag: 3.0.0
+Stable tag: 3.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 Text Domain: payment4-crypto-payment-gateway
@@ -62,7 +62,7 @@ Examples:
 With Payment4, you can accept cryptocurrency payments across your WooCommerce store, RCP membership site, EDD digital products, and Gravity Forms checkout forms—all seamlessly integrated.
 
 == Installation ==
-1. Upload the `payment4-wp-plugin-3.0.0` directory to the `/wp-content/plugins/` directory.  
+1. Upload the `payment4-crypto-payment-gateway` directory to the `/wp-content/plugins/` directory.  
 2. Activate the plugin through the 'Plugins' menu in WordPress.  
 3. Go to the plugin settings page and configure Payment4 gateway.  
 4. Complete the setup by linking your Payment4 account.  
@@ -115,6 +115,18 @@ By using this plugin, you acknowledge that data will be transmitted to Payment4'
 
 == Changelog ==
 
+= 3.0.1 =
+* Fixed all WordPress.org plugin review requirements.
+* Updated text domain consistency across all files.
+* Added proper function name prefixing to prevent conflicts.
+* Replaced parse_url() with wp_parse_url() for better compatibility.
+* Removed load_plugin_textdomain() (WordPress handles it automatically).
+* Added sanitization callbacks for all settings.
+* Fixed admin page slug consistency.
+* Synchronized WooCommerce gateway settings with general settings.
+* Updated Persian (fa_IR) translation with 110 complete translations.
+* Security improvements and code quality enhancements.
+
 = 3.0.0 =
 * Added integration with Restrict Content Pro, Easy Digital Downloads, and Gravity Forms.
 * Expanded supported cryptocurrencies.
@@ -134,6 +146,9 @@ By using this plugin, you acknowledge that data will be transmitted to Payment4'
 * Initial release for WooCommerce integration.
 
 == Upgrade Notice ==
+
+= 3.0.1 =
+Important update with WordPress.org compliance fixes, security improvements, and full Persian translation. Recommended for all users.
 
 = 3.0.0 =
 Upgrade to access new integrations (RCP, EDD, Gravity Forms), improved crypto support, and enhanced payment verification.
