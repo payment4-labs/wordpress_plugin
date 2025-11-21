@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Exit if accessed directly
+}
+
 if ( ! class_exists('Payment4CPG_GF_Bootstrap')) {
     // Initialize the add-on when Gravity Forms is loaded
     add_action('gform_loaded', array('Payment4CPG_GF_Bootstrap', 'load'), 5);
