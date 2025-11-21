@@ -34,8 +34,8 @@ function payment4cpg_gf()
     return Payment4CPG_GF_Gateway::get_instance();
 }
 
-add_filter('the_content', 'payment4_display_callback_message');
-function payment4_display_callback_message($content)
+add_filter('the_content', 'payment4cpg_gf_display_callback_message');
+function payment4cpg_gf_display_callback_message($content)
 {
     // This prevents the message from appearing on other pages or posts.
 

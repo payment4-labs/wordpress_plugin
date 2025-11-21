@@ -150,7 +150,7 @@ class Payment4CPG_EDD_Gateway
 
         // Process return_url to extract base URL and query parameters
         $callback_url      = add_query_arg('edd-listener', 'payment4cpg_edd', home_url('index.php'));
-        $parsed_url        = parse_url($callback_url);
+        $parsed_url        = wp_parse_url($callback_url);
         $base_callback_url = $parsed_url['scheme'] . '://' . $parsed_url['host'];
         if ( ! empty($parsed_url['path'])) {
             $base_callback_url .= $parsed_url['path'];
@@ -168,7 +168,7 @@ class Payment4CPG_EDD_Gateway
 
         // Use the same logic for webhook_url
         $base_webhook_url   = home_url('/index.php'); // Clean base URL
-        $parsed_webhook_url = parse_url($base_webhook_url);
+        $parsed_webhook_url = wp_parse_url($base_webhook_url);
         $base_webhook_url   = $parsed_webhook_url['scheme'] . '://' . $parsed_webhook_url['host'] . $parsed_webhook_url['path'];
 
         $webhook_params = [
@@ -517,14 +517,14 @@ class Payment4CPG_EDD_Gateway
 
 }
 
-function payment4_custom_edd_payment_status($statuses)
+function payment4cpg_edd_custom_payment_status($statuses)
 {
     $statuses['p4-mismatch']   = 'Payment4 Mismatch';
 
     return $statuses;
 }
 
-add_filter('edd_payment_statuses', 'payment4_custom_edd_payment_status');
+add_filter('edd_payment_statuses', 'payment4cpg_edd_custom_payment_status');
 
 
 

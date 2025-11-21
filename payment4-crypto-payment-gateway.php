@@ -8,8 +8,8 @@
  * Text Domain: payment4-crypto-payment-gateway
  * Domain Path: /languages
  * Requires at least: 6.0
- * License: GPLv3 or later
- * License URI: https://www.gnu.org/licenses/gpl-3.0.en.html
+ * License: GPLv2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Stable tag: 3.0.0
  */
 if ( ! defined( 'ABSPATH' ) ) {
@@ -21,10 +21,6 @@ if ( ! defined( 'PAYMENT4_PRO_URL' ) ) {
     define( 'PAYMENT4_PRO_URL', plugin_dir_url( __FILE__ ) );
 }
 
-add_action('plugins_loaded', function () {
-    load_plugin_textdomain('payment4-crypto-payment-gateway', false, dirname(plugin_basename(__FILE__)) . '/languages');
-});
-
 // Load main files
 require_once plugin_dir_path(__FILE__) . 'includes/class-gateway-pro-loader.php';
 
@@ -32,14 +28,14 @@ require_once plugin_dir_path(__FILE__) . 'includes/class-gateway-pro-loader.php'
 
 
 // Redirect to settings after activation
-register_activation_hook(__FILE__, 'payment4_do_activation_redirect');
+register_activation_hook(__FILE__, 'payment4cpg_do_activation_redirect');
 
-function payment4_do_activation_redirect() {
+function payment4cpg_do_activation_redirect() {
     add_option('payment4_do_activation_redirect', true);
 }
 
-add_action('admin_init', 'payment4_redirect_to_settings_page');
-function payment4_redirect_to_settings_page() {
+add_action('admin_init', 'payment4cpg_redirect_to_settings_page');
+function payment4cpg_redirect_to_settings_page() {
     if (get_option('payment4_do_activation_redirect')) {
         delete_option('payment4_do_activation_redirect');
 
@@ -52,9 +48,9 @@ function payment4_redirect_to_settings_page() {
 
 // add setting button under plugin name in Installed Plugins page
 
-add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'payment4_add_settings_link');
+add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'payment4cpg_add_settings_link');
 
-function payment4_add_settings_link($links) {
+function payment4cpg_add_settings_link($links) {
     $settings_link = '<a href="' . admin_url('admin.php?page=payment4-gateway-pro') . '">' . __('Settings', 'payment4-crypto-payment-gateway') . '</a>';
     array_unshift($links, $settings_link);
     return $links;

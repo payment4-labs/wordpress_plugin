@@ -142,30 +142,30 @@ class Payment4CPG_GF_Gateway extends GFPaymentAddOn
                 'fields'      => array(
                     array(
                         'name'          => 'paymentAmount',
-                        'label'         => esc_html__('Payment Amount', 'gravityforms'),
+                        'label'         => esc_html__('Payment Amount', 'payment4-crypto-payment-gateway'),
                         'type'          => 'select',
                         'choices'       => $this->product_amount_choices(),
                         'required'      => true,
                         'default_value' => 'form_total',
-                        'tooltip'       => '<h6>' . esc_html__('Payment Amount', 'gravityforms') . '</h6>' . esc_html__(
+                        'tooltip'       => '<h6>' . esc_html__('Payment Amount', 'payment4-crypto-payment-gateway') . '</h6>' . esc_html__(
                                 "Select which field determines the payment amount, or select 'Form Total' to use the total of all pricing fields as the payment amount.",
-                                'gravityforms'
+                                'payment4-crypto-payment-gateway'
                             ),
                     ),
                     array(
                         'name'     => 'transactionType',
-                        'label'    => esc_html__('Transaction Type', 'gravityforms'),
+                        'label'    => esc_html__('Transaction Type', 'payment4-crypto-payment-gateway'),
                         'type'     => 'select',
                         'onchange' => "jQuery(this).parents('form').submit();",
                         'choices'  => array(
                             array(
-                                'label' => esc_html__('Products and Services', 'gravityforms'),
+                                'label' => esc_html__('Products and Services', 'payment4-crypto-payment-gateway'),
                                 'value' => 'product',
                             ),
                         ),
-                        'tooltip'  => '<h6>' . esc_html__('Transaction Type', 'gravityforms') . '</h6>' . esc_html__(
+                        'tooltip'  => '<h6>' . esc_html__('Transaction Type', 'payment4-crypto-payment-gateway') . '</h6>' . esc_html__(
                                 'Select a transaction type.',
-                                'gravityforms'
+                                'payment4-crypto-payment-gateway'
                             ),
                     ),
                 ),
@@ -214,7 +214,7 @@ class Payment4CPG_GF_Gateway extends GFPaymentAddOn
 
         // استخراج آدرس بازگشت از entry
         $callback_url      = $entry['source_url'];
-        $parsed_url        = parse_url($callback_url);
+        $parsed_url        = wp_parse_url($callback_url);
         $base_callback_url = $parsed_url['scheme'] . '://' . $parsed_url['host'];
         if ( ! empty($parsed_url['path'])) {
             $base_callback_url .= $parsed_url['path'];

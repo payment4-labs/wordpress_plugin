@@ -4,10 +4,12 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-function payment4_register_settings()
+function payment4cpg_register_settings()
 {
     // Register General Settings
-    register_setting('payment4_gateway_pro_options', 'payment4_gateway_pro_settings');
+    register_setting('payment4_gateway_pro_options', 'payment4_gateway_pro_settings', array(
+        'sanitize_callback' => 'payment4cpg_sanitize_general_settings'
+    ));
 
     add_settings_section(
         'payment4_main_section',
@@ -48,7 +50,9 @@ function payment4_register_settings()
     );
 
     // Register plugins setting
-    register_setting('payment4_gateway_pro_plugins', 'payment4_gateway_pro_plugins');
+    register_setting('payment4_gateway_pro_plugins', 'payment4_gateway_pro_plugins', array(
+        'sanitize_callback' => 'payment4cpg_sanitize_plugin_settings'
+    ));
 
     add_settings_section(
         'payment4_plugins_section',
@@ -84,7 +88,43 @@ function payment4_register_settings()
     );
 }
 
-function payment4_admin_settings_notice()
+/**
+ * Sanitize general settings.
+ */
+function payment4cpg_sanitize_general_settings($input)
+{
+    $sanitized = array();
+    
+    if (isset($input['api_key'])) {
+        $sanitized['api_key'] = sanitize_text_field($input['api_key']);
+    }
+    
+    if (isset($input['sandbox_mode'])) {
+        $sanitized['sandbox_mode'] = absint($input['sandbox_mode']);
+    }
+    
+    return $sanitized;
+}
+
+/**
+ * Sanitize plugin settings.
+ */
+function payment4cpg_sanitize_plugin_settings($input)
+{
+    $sanitized = array();
+    
+    $allowed_plugins = array('woo', 'rcp', 'edd', 'gf');
+    
+    foreach ($allowed_plugins as $plugin) {
+        if (isset($input[$plugin])) {
+            $sanitized[$plugin] = absint($input[$plugin]);
+        }
+    }
+    
+    return $sanitized;
+}
+
+function payment4cpg_admin_settings_notice()
 {
     if (
         isset($_GET['settings-updated']) &&

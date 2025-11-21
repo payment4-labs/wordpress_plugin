@@ -209,10 +209,10 @@ class Payment4CPG_WC_Gateway extends WC_Payment_Gateway
             $fees            = $cart->get_fees();
             $discount_exists = false;
             $discount_name   = sprintf(
-                __('Payment4 Crypto Discount (%s%%)', 'payment4-crypto-payment-gateway'),
+                /* translators: %1$s: Discount percentage */
+                __('Payment4 Crypto Discount (%1$s%%)', 'payment4-crypto-payment-gateway'),
                 $discount_percent
             );
-
             foreach ($fees as $fee) {
                 if ($fee->name === $discount_name) {
                     $discount_exists = true;
@@ -239,6 +239,7 @@ class Payment4CPG_WC_Gateway extends WC_Payment_Gateway
         $discount_removed     = false;
         $discount_percent     = floatval($this->get_option('discount_percent'));
         $discount_name_prefix = sprintf(
+            /* translators: %s: Discount percentage */
             __('Payment4 Crypto Discount (%s%%)', 'payment4-crypto-payment-gateway'),
             $discount_percent
         );
@@ -671,12 +672,12 @@ class Payment4CPG_WC_Gateway extends WC_Payment_Gateway
                     break;
 
                 case 'mismatch':
-                    $order->add_order_note(__('Payment mismatch detected by Payment4 plugin.', 'woocommerce'));
+                    $order->add_order_note(__('Payment mismatch detected by Payment4 plugin.', 'payment4-crypto-payment-gateway'));
                     $order->set_status('p4-mismatch');
                     break;
 
                 default:
-                    $order->add_order_note(__('Unknown payment4 status handled.', 'woocommerce'));
+                    $order->add_order_note(__('Unknown payment4 status handled.', 'payment4-crypto-payment-gateway'));
 
                     return false;
             }
@@ -693,7 +694,8 @@ class Payment4CPG_WC_Gateway extends WC_Payment_Gateway
             );
 
             $order->add_order_note(
-                sprintf(__('Handling payment4 status "%s" failed.', 'woocommerce'), $type) . ' ' . $e->getMessage()
+                /* translators: %s: Payment status type */
+                sprintf(__('Handling payment4 status "%s" failed.', 'payment4-crypto-payment-gateway'), $type) . ' ' . $e->getMessage()
             );
 
             return false;
@@ -983,7 +985,7 @@ class Payment4CPG_WC_Gateway extends WC_Payment_Gateway
     {
         $callbackOrWebhook = $isCallback ? "_callback" : "_webhook";
         // Process return_url to extract base URL and query parameters
-        $parsed_url        = parse_url(
+        $parsed_url        = wp_parse_url(
             WC()->api_request_url(
                 get_class($this)
                 . $callbackOrWebhook

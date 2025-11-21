@@ -45,8 +45,8 @@ class Payment4_Gateway_Pro_Loader
         add_action('admin_enqueue_scripts', [$this, 'payment4_admin_styles']);
         // Register settings
         require_once plugin_dir_path(__FILE__) . '../includes/register-settings.php';
-        add_action('admin_init', 'payment4_register_settings');
-        add_action('admin_notices', 'payment4_admin_settings_notice');
+        add_action('admin_init', 'payment4cpg_register_settings');
+        add_action('admin_notices', 'payment4cpg_admin_settings_notice');
     }
 
     public function payment4_gateway_pro_options_page()

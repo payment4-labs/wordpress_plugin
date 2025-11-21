@@ -6,8 +6,8 @@ if ( ! defined('ABSPATH')) {
 }
 
 // Register the Payment4 gateway
-add_action('rcp_payment_gateways', 'payment4_rcp_register_gateway');
-function payment4_rcp_register_gateway($gateways)
+add_action('rcp_payment_gateways', 'payment4cpg_rcp_register_gateway');
+function payment4cpg_rcp_register_gateway($gateways)
 {
     // Check if RCP is enabled in plugin settings
     $plugin_options = get_option('payment4_gateway_pro_plugins', []);
@@ -90,11 +90,11 @@ class Payment4CPG_RCP_Gateway extends RCP_Payment_Gateway
             $amount /= 10;
         }
         $subscription_id = $this->subscription_key ?: 'rcp_' . $this->membership->get_id();
-        // translators: %s is the membership ID.
+        /* translators: %s: Membership ID */
         $description = sprintf(__('Membership #%s', 'payment4-crypto-payment-gateway'), $this->membership->get_id());
 
         // Process return_url to extract base URL and query parameters
-        $parsed_url        = parse_url($this->return_url);
+        $parsed_url        = wp_parse_url($this->return_url);
         $base_callback_url = $parsed_url['scheme'] . '://' . $parsed_url['host'];
         if ( ! empty($parsed_url['path'])) {
             $base_callback_url .= $parsed_url['path'];
@@ -114,7 +114,7 @@ class Payment4CPG_RCP_Gateway extends RCP_Payment_Gateway
 
         // Use the same logic for webhook_url
         $base_webhook_url   = home_url('/index.php'); // Clean base URL
-        $parsed_webhook_url = parse_url($base_webhook_url);
+        $parsed_webhook_url = wp_parse_url($base_webhook_url);
         $base_webhook_url   = $parsed_webhook_url['scheme'] . '://' . $parsed_webhook_url['host'] . $parsed_webhook_url['path'];
 
         $webhook_params = [
@@ -183,7 +183,7 @@ class Payment4CPG_RCP_Gateway extends RCP_Payment_Gateway
             // Add note to membership
             $this->membership->add_note(
                 sprintf(
-                // translators: 1: Payment UID, 2: Payment URL.
+                    /* translators: 1: Payment UID, 2: Payment URL */
                     __('Payment created. Payment UID: %1$s, Payment URL: %2$s', 'payment4-crypto-payment-gateway'),
                     $body['paymentUid'],
                     $body['paymentUrl']
@@ -244,6 +244,7 @@ class Payment4CPG_RCP_Gateway extends RCP_Payment_Gateway
                     $charge_type_slug = ! empty($payment->transaction_type) ? $payment->transaction_type : 'new';
 
                     $note = sprintf(
+                        /* translators: 1: Membership name, 2: Payment ID, 3: Amount paid, 4: Gateway name, 5: Payment type, 6: Amount difference */
                         __(
                             ' <strong> Acceptable </strong> payment for membership "%1$s"; Payment ID: #%2$d; Amount: %3$s; Gateway: %4$s; Type: %5$s; Amount Difference: %6$s',
                             'payment4-crypto-payment-gateway'
@@ -281,6 +282,7 @@ class Payment4CPG_RCP_Gateway extends RCP_Payment_Gateway
 
             $membership->add_note(
                 sprintf(
+                    /* translators: 1: Payment status, 2: Payment ID, 3: Amount difference */
                     __(
                         'Payment <strong> %1$s </strong>; Payment ID: %2$s; Amount Difference: %3$s',
                         'payment4-crypto-payment-gateway'
@@ -296,6 +298,7 @@ class Payment4CPG_RCP_Gateway extends RCP_Payment_Gateway
             }
 
             $_SESSION['payment4_msg'] = sprintf(
+                /* translators: 1: Payment status, 2: Payment UID, 3: Payment status, 4: Amount difference */
                 __(
                     'Payment %1$s. <br> Payment UID: %2$s <br> Status: %3$s <br> Amount Difference: %4$s',
                     'payment4-crypto-payment-gateway'
@@ -326,6 +329,7 @@ class Payment4CPG_RCP_Gateway extends RCP_Payment_Gateway
                     $charge_type_slug = ! empty($payment->transaction_type) ? $payment->transaction_type : 'new';
 
                     $note = sprintf(
+                        /* translators: 1: Membership name, 2: Payment ID, 3: Amount paid, 4: Gateway name, 5: Payment type, 6: Amount difference */
                         __(
                             ' <strong> Mismatch </strong> payment for membership "%1$s"; Payment ID: #%2$d; Amount: %3$s; Gateway: %4$s; Type: %5$s; Amount Difference: %6$s',
                             'payment4-crypto-payment-gateway'
@@ -360,6 +364,7 @@ class Payment4CPG_RCP_Gateway extends RCP_Payment_Gateway
 
             $membership->add_note(
                 sprintf(
+                    /* translators: 1: Payment status, 2: Payment ID, 3: Amount difference, 4: Error message */
                     __(
                         'Payment <strong> %1$s </strong>; Payment ID: %2$s; Amount Difference: %3$s; Error: %4$s',
                         'payment4-crypto-payment-gateway'
@@ -376,6 +381,7 @@ class Payment4CPG_RCP_Gateway extends RCP_Payment_Gateway
             }
 
             $_SESSION['payment4_msg'] = sprintf(
+                /* translators: 1: Payment status, 2: Payment UID, 3: Payment status, 4: Amount difference, 5: Error message */
                 __(
                     'Payment %1$s. <br> Payment UID: %2$s <br> Status: %3$s <br> Amount Difference: %4$s <br> Error: %5$s',
                     'payment4-crypto-payment-gateway'
@@ -561,8 +567,8 @@ class Payment4CPG_RCP_Gateway extends RCP_Payment_Gateway
 }
 
 // Register webhook handler
-add_action('init', 'payment4_rcp_handle_webhook');
-function payment4_rcp_handle_webhook()
+add_action('init', 'payment4cpg_rcp_handle_webhook');
+function payment4cpg_rcp_handle_webhook()
 {
     if ( ! empty($_GET['rcp_gateway']) && $_GET['rcp_gateway'] === 'payment4cpg_rcp') {
         $gateway = new Payment4CPG_RCP_Gateway();
@@ -571,8 +577,8 @@ function payment4_rcp_handle_webhook()
 }
 
 // Add IRR and IRT to currencies
-add_filter('rcp_currencies', 'RCP_IRAN_Currencies');
-function RCP_IRAN_Currencies($currencies)
+add_filter('rcp_currencies', 'payment4cpg_rcp_iran_currencies');
+function payment4cpg_rcp_iran_currencies($currencies)
 {
     unset($currencies['RIAL'], $currencies['IRR'], $currencies['IRT']);
     $iran_currencies = array(
@@ -583,27 +589,27 @@ function RCP_IRAN_Currencies($currencies)
     return array_unique(array_merge($iran_currencies, $currencies));
 }
 
-add_filter('rcp_irr_currency_filter_before', 'RCP_IRR_Before', 10, 3);
-add_filter('rcp_irr_currency_filter_after', 'RCP_IRR_After', 10, 3);
-add_filter('rcp_irt_currency_filter_before', 'RCP_IRT_Before', 10, 3);
-add_filter('rcp_irt_currency_filter_after', 'RCP_IRT_After', 10, 3);
+add_filter('rcp_irr_currency_filter_before', 'payment4cpg_rcp_irr_before', 10, 3);
+add_filter('rcp_irr_currency_filter_after', 'payment4cpg_rcp_irr_after', 10, 3);
+add_filter('rcp_irt_currency_filter_before', 'payment4cpg_rcp_irt_before', 10, 3);
+add_filter('rcp_irt_currency_filter_after', 'payment4cpg_rcp_irt_after', 10, 3);
 
-function RCP_IRR_Before($formatted_price, $currency_code, $price)
+function payment4cpg_rcp_irr_before($formatted_price, $currency_code, $price)
 {
     return __('ریال', 'payment4-crypto-payment-gateway') . ' ' . $price;
 }
 
-function RCP_IRR_After($formatted_price, $currency_code, $price)
+function payment4cpg_rcp_irr_after($formatted_price, $currency_code, $price)
 {
     return $price . ' ' . __('ریال', 'payment4-crypto-payment-gateway');
 }
 
-function RCP_IRT_Before($formatted_price, $currency_code, $price)
+function payment4cpg_rcp_irt_before($formatted_price, $currency_code, $price)
 {
     return __('تومان', 'payment4-crypto-payment-gateway') . ' ' . $price;
 }
 
-function RCP_IRT_After($formatted_price, $currency_code, $price)
+function payment4cpg_rcp_irt_after($formatted_price, $currency_code, $price)
 {
     return $price . ' ' . __('تومان', 'payment4-crypto-payment-gateway');
 }

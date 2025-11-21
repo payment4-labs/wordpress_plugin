@@ -20,9 +20,6 @@ class Payment4CPG_WC_Loader
      */
     public static function init()
     {
-        // Load plugin textdomain.
-        add_action('plugins_loaded', array(__CLASS__, 'plugin_loaded'));
-
         self::includes();
 
         // Make the Payments gateway available to WC.
@@ -33,11 +30,6 @@ class Payment4CPG_WC_Loader
 
         // Hook the custom function to the 'woocommerce_blocks_loaded' action
         add_action('woocommerce_blocks_loaded', array(__CLASS__, 'oawoo_register_order_approval_payment_method_type'));
-    }
-
-    public static function plugin_loaded()
-    {
-        self::load_textdomain();
     }
 
     /**
@@ -98,14 +90,6 @@ class Payment4CPG_WC_Loader
     }
 
     /**
-     * Load plugin textdomain.
-     */
-    public static function load_textdomain()
-    {
-        load_plugin_textdomain('payment4-woocommerce', false, dirname(plugin_basename(__FILE__)) . '/languages/');
-    }
-
-    /**
      * Add the Payment gateway to the list of available gateways.
      *
      * @param  array
@@ -151,9 +135,9 @@ class Payment4CPG_WC_Loader
 
 Payment4CPG_WC_Loader::init();
 
-add_action('init', 'payment4_register_custom_order_status');
+add_action('init', 'payment4cpg_woo_register_custom_order_status');
 
-function payment4_register_custom_order_status()
+function payment4cpg_woo_register_custom_order_status()
 {
     register_post_status('wc-p4-acceptable', array(
         'label'                     => _x('Payment4 Acceptable', 'Order status', 'payment4-crypto-payment-gateway'),
@@ -161,9 +145,10 @@ function payment4_register_custom_order_status()
         'exclude_from_search'       => false,
         'show_in_admin_all_list'    => true,
         'show_in_admin_status_list' => true,
+        /* translators: %1$s: Number of orders */
         'label_count'               => _n_noop(
-            'Payment4 Acceptable <span class="count">(%s)</span>',
-            'Payment4 Acceptables <span class="count">(%s)</span>',
+            'Payment4 Acceptable <span class="count">(%1$s)</span>',
+            'Payment4 Acceptables <span class="count">(%1$s)</span>',
             'payment4-crypto-payment-gateway'
         ),
     ));
@@ -172,17 +157,18 @@ function payment4_register_custom_order_status()
         'label'                     => _x('Payment4 Mismatch', 'Order status', 'payment4-crypto-payment-gateway'),
         'public'                    => true,
         'show_in_admin_status_list' => true,
+        /* translators: %1$s: Number of orders */
         'label_count'               => _n_noop(
-            'Payment4 Mismatch <span class="count">(%s)</span>',
-            'Payment4 Mismatches <span class="count">(%s)</span>',
+            'Payment4 Mismatch <span class="count">(%1$s)</span>',
+            'Payment4 Mismatches <span class="count">(%1$s)</span>',
             'payment4-crypto-payment-gateway'
         ),
     ));
 }
 
-add_filter('wc_order_statuses', 'payment4_add_custom_order_status');
+add_filter('wc_order_statuses', 'payment4cpg_woo_add_custom_order_status');
 
-function payment4_add_custom_order_status($order_statuses)
+function payment4cpg_woo_add_custom_order_status($order_statuses)
 {
     $order_statuses['wc-p4-mismatch']   = _x('Payment4 Mismatch', 'Order status', 'payment4-crypto-payment-gateway');
     $order_statuses['wc-p4-acceptable'] = _x('Payment4 Acceptable', 'Order status', 'payment4-crypto-payment-gateway');
@@ -194,11 +180,11 @@ add_action('admin_enqueue_scripts', function () {
     $screen = get_current_screen();
 
     if (isset($screen->id) && strpos($screen->id, 'wc-orders') !== false) {
-        payment4_enqueue_order_status_styles();
+        payment4cpg_woo_enqueue_order_status_styles();
     }
 });
 
-function payment4_enqueue_order_status_styles() {
+function payment4cpg_woo_enqueue_order_status_styles() {
     if (!is_admin()) return;
 
     // Register a dummy handle to attach inline styles
