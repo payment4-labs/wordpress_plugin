@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Payment4 Crypto Payment gateway 3.0.0\n"
+"Project-Id-Version: Payment4 Crypto Payment gateway 3.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/payment4-crypto-payment-gateway\n"
 "Last-Translator: Amirhossein Taghizadeh <amyrosein@gmail.com>\n"
 "Language-Team: Persian <info@payment4.com>\n"
