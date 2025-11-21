@@ -7,7 +7,7 @@
  * Author URI: https://payment4.com
  * Text Domain: payment4-gateway-pro
  * Domain Path: /languages
- * Requires at least: 6.0.0
+ * Requires at least: 6.0
  * License: GPLv3 or later
  * License URI: https://www.gnu.org/licenses/gpl-3.0.en.html
  * Stable tag: 3.0.0

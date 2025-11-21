@@ -1,7 +1,7 @@
 === Payment4 Crypto Payment gateway - For WooCommerce & RCP & EDD & Gravity Forms ===
 Contributors: payment4,amyrosein
 Tags: woocommerce, cryptocurrency, payment-gateway, edd, gravity-forms
-Requires at least: 5.0
+Requires at least: 6.0
 Requires PHP: 7.0
 Tested up to: 6.8
 Stable tag: 3.0.0
