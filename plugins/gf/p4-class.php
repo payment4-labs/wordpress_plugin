@@ -119,9 +119,9 @@ class GFPayment4 extends GFPaymentAddOn
     public function plugin_settings()
     {
         $settings_url = admin_url('admin.php?page=payment4-gateway-pro');
-        echo '<h2>' . __('To change Payment4 options (such as API key & Sandbox mode) visit', 'payment4-gateway-pro')  .'<a href="' . esc_url(
+        echo '<h2>' . __('To change Payment4 options (such as API key & Sandbox mode) visit', 'payment4-crypto-payment-gateway')  .'<a href="' . esc_url(
                 $settings_url
-            ) . '" target="_blank">'. __('Payment4 Settings', 'payment4-gateway-pro') . '</a></h2>';
+            ) . '" target="_blank">'. __('Payment4 Settings', 'payment4-crypto-payment-gateway') . '</a></h2>';
     }
 
     /**
@@ -325,7 +325,7 @@ class GFPayment4 extends GFPaymentAddOn
         $formId     = rgget('formId');
 
         if ( ! $paymentUid || ! $formId) {
-            return new WP_Error('invalid_data', esc_html__('paymentUid or formId missing'));
+            return new WP_Error('invalid_data', esc_html__('paymentUid or formId missing', 'payment4-crypto-payment-gateway'));
         }
 
         $search_criteria['field_filters'][] = [
@@ -334,7 +334,7 @@ class GFPayment4 extends GFPaymentAddOn
         ];
         $entry                              = GFAPI::get_entries($formId, $search_criteria)[0];
         if ( ! $paymentUid || ! $formId) {
-            return new WP_Error('invalid_data', esc_html__('Entry missing'));
+            return new WP_Error('invalid_data', esc_html__('Entry missing', 'payment4-crypto-payment-gateway'));
         }
 
         $api_key = $this->api_key;
@@ -464,7 +464,7 @@ class GFPayment4 extends GFPaymentAddOn
 
     public function supported_currencies($currencies)
     {
-        $currencies['IRT']['name']               = esc_html__('تومان ایران', 'payment4-gateway');
+        $currencies['IRT']['name']               = esc_html__('تومان ایران', 'payment4-crypto-payment-gateway');
         $currencies['IRT']['symbol_right']       = '';
         $currencies['IRT']['symbol_left']        = 'تومان';
         $currencies['IRT']['symbol_padding']     = ' ';

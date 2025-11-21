@@ -152,7 +152,7 @@ add_action('init', 'payment4_register_custom_order_status');
 function payment4_register_custom_order_status()
 {
     register_post_status('wc-p4-acceptable', array(
-        'label'                     => _x('Payment4 Acceptable', 'Order status', 'payment4'),
+        'label'                     => _x('Payment4 Acceptable', 'Order status', 'payment4-crypto-payment-gateway'),
         'public'                    => true,
         'exclude_from_search'       => false,
         'show_in_admin_all_list'    => true,
@@ -160,18 +160,18 @@ function payment4_register_custom_order_status()
         'label_count'               => _n_noop(
             'Payment4 Acceptable <span class="count">(%s)</span>',
             'Payment4 Acceptables <span class="count">(%s)</span>',
-            'payment4'
+            'payment4-crypto-payment-gateway'
         ),
     ));
 
     register_post_status('wc-p4-mismatch', array(
-        'label'                     => _x('Payment4 Mismatch', 'Order status', 'payment4'),
+        'label'                     => _x('Payment4 Mismatch', 'Order status', 'payment4-crypto-payment-gateway'),
         'public'                    => true,
         'show_in_admin_status_list' => true,
         'label_count'               => _n_noop(
             'Payment4 Mismatch <span class="count">(%s)</span>',
             'Payment4 Mismatches <span class="count">(%s)</span>',
-            'payment4'
+            'payment4-crypto-payment-gateway'
         ),
     ));
 }
@@ -180,8 +180,8 @@ add_filter('wc_order_statuses', 'payment4_add_custom_order_status');
 
 function payment4_add_custom_order_status($order_statuses)
 {
-    $order_statuses['wc-p4-mismatch']   = _x('Payment4 Mismatch', 'Order status', 'payment4');
-    $order_statuses['wc-p4-acceptable'] = _x('Payment4 Acceptable', 'Order status', 'payment4');
+    $order_statuses['wc-p4-mismatch']   = _x('Payment4 Mismatch', 'Order status', 'payment4-crypto-payment-gateway');
+    $order_statuses['wc-p4-acceptable'] = _x('Payment4 Acceptable', 'Order status', 'payment4-crypto-payment-gateway');
 
     return $order_statuses;
 }

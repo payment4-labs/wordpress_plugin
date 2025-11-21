@@ -5,7 +5,7 @@
  * Version: 3.0.0
  * Author: Payment4, Amirhossein Taghizadeh
  * Author URI: https://payment4.com
- * Text Domain: payment4-gateway-pro
+ * Text Domain: payment4-crypto-payment-gateway
  * Domain Path: /languages
  * Requires at least: 6.0
  * License: GPLv3 or later
@@ -22,7 +22,7 @@ if ( ! defined( 'PAYMENT4_PRO_URL' ) ) {
 }
 
 add_action('plugins_loaded', function () {
-    load_plugin_textdomain('payment4-gateway-pro', false, dirname(plugin_basename(__FILE__)) . '/languages');
+    load_plugin_textdomain('payment4-crypto-payment-gateway', false, dirname(plugin_basename(__FILE__)) . '/languages');
 });
 
 // Load main files
@@ -55,7 +55,7 @@ function payment4_redirect_to_settings_page() {
 add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'payment4_add_settings_link');
 
 function payment4_add_settings_link($links) {
-    $settings_link = '<a href="' . admin_url('admin.php?page=payment4-gateway-pro') . '">' . __('Settings', 'payment4-gateway-pro') . '</a>';
+    $settings_link = '<a href="' . admin_url('admin.php?page=payment4-gateway-pro') . '">' . __('Settings', 'payment4-crypto-payment-gateway') . '</a>';
     array_unshift($links, $settings_link);
     return $links;
 }

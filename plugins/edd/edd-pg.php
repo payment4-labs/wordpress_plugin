@@ -47,8 +47,8 @@ class Payment4Edd
         $plugin_options = get_option('payment4_gateway_pro_plugins', []);
         if ( ! empty($plugin_options['edd'])) {
             $gateways['payment4'] = array(
-                'admin_label'    => __('Payment4', 'payment4-gateway-pro'),
-                'checkout_label' => __('Payment4 (Pay with Crypto)', 'payment4-gateway-pro'),
+                'admin_label'    => __('Payment4', 'payment4-crypto-payment-gateway'),
+                'checkout_label' => __('Payment4 (Pay with Crypto)', 'payment4-crypto-payment-gateway'),
             );
         }
 
@@ -63,7 +63,7 @@ class Payment4Edd
         if ('payment4' === $chosen_gateway && ! $is_enabled) {
             edd_set_error(
                 'payment4_gateway_not_configured',
-                __('Payment4 payment gateway is not setup.', 'payment4-gateway-pro')
+                __('Payment4 payment gateway is not setup.', 'payment4-crypto-payment-gateway')
             );
         }
 
@@ -72,7 +72,7 @@ class Payment4Edd
                 'payment4_gateway_invalid_currency',
                 __(
                     'Currency not supported by Payment4.',
-                    'payment4-gateway-pro'
+                    'payment4-crypto-payment-gateway'
                 )
             );
         }
@@ -128,7 +128,7 @@ class Payment4Edd
             if (isset($body['status']) && ! $body['status']) {
                 $error_message = isset($body['errorCode']) ? $this->get_error_message($body['errorCode']) : __(
                     'Payment creation failed.',
-                    'payment4-gateway-pro'
+                    'payment4-crypto-payment-gateway'
                 );
                 edd_set_error('payment4_error', $error_message);
             }
@@ -255,7 +255,7 @@ class Payment4Edd
                         // translators: 1: Payment UID, 2: Payment status
                             __(
                                 'Payment Successful. <br> Payment UID: %1$s <br> Status: %2$s',
-                                'payment4-gateway-pro'
+                                'payment4-crypto-payment-gateway'
                             ),
                             $payment4_transaction_id,
                             $payment_status,
@@ -267,7 +267,7 @@ class Payment4Edd
                         // translators: 1: Payment UID, 2: Payment status, 3: Amount difference
                             __(
                                 'Payment Acceptable. <br> Payment UID: %1$s <br> Status: %2$s <br> Amount Difference: %3$s',
-                                'payment4-gateway-pro'
+                                'payment4-crypto-payment-gateway'
                             ),
                             $payment4_transaction_id,
                             $payment_status,
@@ -293,7 +293,7 @@ class Payment4Edd
                     // translators: 1: Payment UID, 2: Payment status, 3: Amount difference, 4: Error message
                         __(
                             'Payment Mismatched. <br> Payment UID: %1$s, <br> Status: %2$s, <br> Amount Difference: %3$s, <br> Error: %4$s',
-                            'payment4-gateway-pro'
+                            'payment4-crypto-payment-gateway'
                         ),
                         $payment4_transaction_id,
                         $payment_status,
@@ -307,7 +307,7 @@ class Payment4Edd
                     // translators: 1: Payment UID, 2: Payment status, 3: Amount difference, 4: Error message
                         __(
                             'Payment Failed. <br> Payment UID: %1$s, <br> Status: %2$s, <br> Amount Difference: %3$s, <br> Error: %4$s',
-                            'payment4-gateway-pro'
+                            'payment4-crypto-payment-gateway'
                         ),
                         $payment4_transaction_id,
                         $payment_status,
@@ -383,20 +383,20 @@ class Payment4Edd
                 if (isset($body['verified'])) {
                     if ($body['verified']) {
                         $orderStatus = 'completed';
-                        $error       = $paymentStatus === 'acceptable' ? __('Payment acceptable.', 'rcp-payment4') : __(
+                        $error       = $paymentStatus === 'acceptable' ? __('Payment acceptable.', 'payment4-crypto-payment-gateway') : __(
                             'Payment successful.',
-                            'rcp-payment4'
+                            'payment4-crypto-payment-gateway'
                         );
                     } else {
-                        $error = $paymentStatus === 'mismatched' ? __('Payment mismatched.', 'rcp-payment4') : __(
+                        $error = $paymentStatus === 'mismatched' ? __('Payment mismatched.', 'payment4-crypto-payment-gateway') : __(
                             'Payment failed.',
-                            'rcp-payment4'
+                            'payment4-crypto-payment-gateway'
                         );
                     }
                 }
             }
         } else {
-            $error = __('Payment ID not found', 'rcp-payment4');
+            $error = __('Payment ID not found', 'payment4-crypto-payment-gateway');
         }
 
         return compact('orderStatus', 'paymentStatus', 'amountDifference', 'transaction_id', 'error');
@@ -452,21 +452,21 @@ class Payment4Edd
     private function get_error_message($error_code)
     {
         $errors = [
-            1001 => __('Callback or Webhook URL must be a valid URL in production mode.', 'rcp-payment4'),
-            1002 => __('API key not provided.', 'rcp-payment4'),
-            1003 => __('API key not found.', 'rcp-payment4'),
-            1004 => __('Gateway not approved.', 'rcp-payment4'),
-            1006 => __('Payment not found.', 'rcp-payment4'),
-            1010 => __('Invalid amount.', 'rcp-payment4'),
-            1012 => __('Invalid currency.', 'rcp-payment4'),
-            1005 => __('Assets not found.', 'rcp-payment4'),
-            1011 => __('Payment amount lower than minimum.', 'rcp-payment4'),
-            1013 => __('Invalid language.', 'rcp-payment4'),
+            1001 => __('Callback or Webhook URL must be a valid URL in production mode.', 'payment4-crypto-payment-gateway'),
+            1002 => __('API key not provided.', 'payment4-crypto-payment-gateway'),
+            1003 => __('API key not found.', 'payment4-crypto-payment-gateway'),
+            1004 => __('Gateway not approved.', 'payment4-crypto-payment-gateway'),
+            1006 => __('Payment not found.', 'payment4-crypto-payment-gateway'),
+            1010 => __('Invalid amount.', 'payment4-crypto-payment-gateway'),
+            1012 => __('Invalid currency.', 'payment4-crypto-payment-gateway'),
+            1005 => __('Assets not found.', 'payment4-crypto-payment-gateway'),
+            1011 => __('Payment amount lower than minimum.', 'payment4-crypto-payment-gateway'),
+            1013 => __('Invalid language.', 'payment4-crypto-payment-gateway'),
         ];
 
         return $errors[$error_code] ?? __(
             'An error occurred during payment.',
-            'rcp-payment4'
+            'payment4-crypto-payment-gateway'
         );
     }
 
@@ -477,7 +477,7 @@ class Payment4Edd
      */
     public function add_currencies($currencies)
     {
-        $currencies['IRT'] = __('Iranian Toman (IRT)', 'payment4-gateway-pro');
+        $currencies['IRT'] = __('Iranian Toman (IRT)', 'payment4-crypto-payment-gateway');
 
         return $currencies;
     }
@@ -489,7 +489,7 @@ class Payment4Edd
      */
     public function payment_icon($icons)
     {
-        $icons[PAYMENT4_PRO_URL . 'assets/img/small-square-logo.png'] = __('Payment4', 'payment4-gateway-pro');
+        $icons[PAYMENT4_PRO_URL . 'assets/img/small-square-logo.png'] = __('Payment4', 'payment4-crypto-payment-gateway');
 
         return $icons;
     }

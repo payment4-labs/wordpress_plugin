@@ -7,7 +7,7 @@ Tested up to: 6.8
 Stable tag: 3.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
-Text Domain: payment4-gateway-pro
+Text Domain: payment4-crypto-payment-gateway
 Domain Path: /languages
 Plugin URI: https://payment4.com/plugin
 Author: Payment4.com, Amirhossein Taghizadeh

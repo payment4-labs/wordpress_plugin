@@ -54,27 +54,27 @@ class Payment4_Gateway_Pro_Loader
         // Main menu
         add_menu_page(
             'Payment4 Gateway Pro Settings',
-            __('Payment4', 'payment4-gateway-pro'),
+            __('Payment4', 'payment4-crypto-payment-gateway'),
             'manage_options',
-            'payment4-gateway-pro',
+            'payment4-crypto-payment-gateway',
             [$this, 'render_general_settings_page'],
             plugin_dir_url(__FILE__) . '../assets/img/small-square-logo.png',
 
         );
         // Submenu: General Settings
         add_submenu_page(
-            'payment4-gateway-pro',
-            __('General Settings', 'payment4-gateway-pro'),
-            __('General Settings', 'payment4-gateway-pro'),
+            'payment4-crypto-payment-gateway',
+            __('General Settings', 'payment4-crypto-payment-gateway'),
+            __('General Settings', 'payment4-crypto-payment-gateway'),
             'manage_options',
-            'payment4-gateway-pro',
+            'payment4-crypto-payment-gateway',
             [$this, 'render_general_settings_page'],
         );
         // Submenu: Plugins
         add_submenu_page(
-            'payment4-gateway-pro',
-            __('Active Plugins', 'payment4-gateway-pro'),
-            __('Plugins', 'payment4-gateway-pro'),
+            'payment4-crypto-payment-gateway',
+            __('Active Plugins', 'payment4-crypto-payment-gateway'),
+            __('Plugins', 'payment4-crypto-payment-gateway'),
             'manage_options',
             'payment4-gateway-pro-plugins',
             [$this, 'render_plugins_settings_page'],
@@ -93,7 +93,7 @@ class Payment4_Gateway_Pro_Loader
 
     public function payment4_admin_styles() {
         // Check if we are on your specific admin page
-        if ( isset($_GET['page']) && ( $_GET['page'] == 'payment4-gateway-pro' || $_GET['page'] == 'payment4-gateway-pro-plugins') ) {
+        if ( isset($_GET['page']) && ( $_GET['page'] == 'payment4-crypto-payment-gateway' || $_GET['page'] == 'payment4-gateway-pro-plugins') ) {
             wp_enqueue_style(
                 'payment4-admin-css', // Handle name for your stylesheet
                 PAYMENT4_PRO_URL . 'assets/css/payment4.css', // Path to your CSS file

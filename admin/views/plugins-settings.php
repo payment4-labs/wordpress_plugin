@@ -5,7 +5,7 @@
         <?php
         settings_fields('payment4_gateway_pro_plugins');
         do_settings_sections('payment4_plugins');
-        submit_button(__('Save Modules', 'payment4-gateway-pro'));
+        submit_button(__('Save Modules', 'payment4-crypto-payment-gateway'));
         ?>
     </form>
 </div>

@@ -37,8 +37,8 @@ class WC_Payment4 extends WC_Payment_Gateway
     public function __construct()
     {
         $this->id                 = 'WC_Payment4';
-        $this->method_title       = __('Payment4', 'payment4-gateway-pro');
-        $this->method_description = __('Gateway settings for WooCommerce', 'payment4-gateway-pro');
+        $this->method_title       = __('Payment4', 'payment4-crypto-payment-gateway');
+        $this->method_description = __('Gateway settings for WooCommerce', 'payment4-crypto-payment-gateway');
         $this->icon               = trailingslashit(WP_PLUGIN_URL) . plugin_basename(
                 dirname(__FILE__)
             ) . '/assets/logo.png';
@@ -46,7 +46,7 @@ class WC_Payment4 extends WC_Payment_Gateway
         $this->init_form_fields();
         $this->init_settings();
 
-        $this->title = $this->settings['title'] . " " . __('( Pay with Crypto )', 'payment4-gateway-pro');
+        $this->title = $this->settings['title'] . " " . __('( Pay with Crypto )', 'payment4-crypto-payment-gateway');
         $img         = ' <img src="' . $this->icon . '" style="width: 90px;" >';
 
 
@@ -63,7 +63,7 @@ class WC_Payment4 extends WC_Payment_Gateway
             add_action('woocommerce_checkout_update_order_review', array($this, 'update_checkout_discounts'));
             $discount_text     = sprintf(
             /* translators: %s is replaced with "string" */
-                __('Get %s Percent Discount for paying by Payment4', 'payment4-gateway-pro'),
+                __('Get %s Percent Discount for paying by Payment4', 'payment4-crypto-payment-gateway'),
                 $this->option('discount_percent')
             );
             $this->description .= ". " . $discount_text;
@@ -104,14 +104,14 @@ class WC_Payment4 extends WC_Payment_Gateway
         if ($status === 'p4-mismatch') {
             return __(
                 '⛔ Your order was not completed due to a payment mismatch. Please contact support.',
-                'payment4-gateway-pro'
+                'payment4-crypto-payment-gateway'
             );
         }
 
         if ($status === 'p4-acceptable') {
             return __(
                 '⚠️ Your order was received, but the payment amount was not exact. Your order is under review.',
-                'payment4-gateway-pro'
+                'payment4-crypto-payment-gateway'
             );
         }
 
@@ -131,7 +131,7 @@ class WC_Payment4 extends WC_Payment_Gateway
             echo '<div class="woocommerce-message">';
             echo __(
                 '⛔ Your order was not completed due to a payment mismatch.<br/>Please contact support.',
-                'payment4-gateway-pro'
+                'payment4-crypto-payment-gateway'
             );
             echo '</div>';
         }
@@ -140,7 +140,7 @@ class WC_Payment4 extends WC_Payment_Gateway
             echo '<div class="woocommerce-message" >';
             echo __(
                 '⚠️ Your order was received, but the payment amount was not exact.<br/>Please wait while we review it.',
-                'payment4-gateway-pro'
+                'payment4-crypto-payment-gateway'
             );
             echo '</div>';
         }
@@ -205,7 +205,7 @@ class WC_Payment4 extends WC_Payment_Gateway
             $fees            = $cart->get_fees();
             $discount_exists = false;
             $discount_name   = sprintf(
-                __('Payment4 Crypto Discount (%s%%)', 'payment4-gateway-pro'),
+                __('Payment4 Crypto Discount (%s%%)', 'payment4-crypto-payment-gateway'),
                 $discount_percent
             );
 
@@ -235,7 +235,7 @@ class WC_Payment4 extends WC_Payment_Gateway
         $discount_removed     = false;
         $discount_percent     = floatval($this->get_option('discount_percent'));
         $discount_name_prefix = sprintf(
-            __('Payment4 Crypto Discount (%s%%)', 'payment4-gateway-pro'),
+            __('Payment4 Crypto Discount (%s%%)', 'payment4-crypto-payment-gateway'),
             $discount_percent
         );
 
@@ -302,74 +302,74 @@ class WC_Payment4 extends WC_Payment_Gateway
         $shortcodes        = '<br>' . implode(' - ', $shortcodes);
         $fields            = [
             'enabled'            => [
-                'title'       => __('Enable/Disable', 'payment4-gateway-pro'),
+                'title'       => __('Enable/Disable', 'payment4-crypto-payment-gateway'),
                 'type'        => 'checkbox',
-                'label'       => __('Activation of the payment gateway', 'payment4-gateway-pro'),
-                'description' => __('Tick the checkbox to activate', 'payment4-gateway-pro'),
+                'label'       => __('Activation of the payment gateway', 'payment4-crypto-payment-gateway'),
+                'description' => __('Tick the checkbox to activate', 'payment4-crypto-payment-gateway'),
                 'default'     => 'no',
                 'desc_tip'    => true,
             ],
             // Optionally display API Key and Sandbox Mode as read-only
             'api_key'            => [
-                'title'             => __('API Key', 'payment4-gateway-pro'),
+                'title'             => __('API Key', 'payment4-crypto-payment-gateway'),
                 'type'              => 'text',
-                'description'       => __('Managed in Payment4 General Settings', 'payment4-gateway-pro'),
+                'description'       => __('Managed in Payment4 General Settings', 'payment4-crypto-payment-gateway'),
                 'default'           => isset($general_options['api_key']) ? esc_attr($general_options['api_key']) : '',
                 'custom_attributes' => ['readonly' => 'readonly'],
                 'desc_tip'          => true,
             ],
             'sandbox'            => [
-                'title'             => __('Sandbox Mode', 'payment4-gateway-pro'),
+                'title'             => __('Sandbox Mode', 'payment4-crypto-payment-gateway'),
                 'type'              => 'checkbox',
-                'label'             => __('Managed in Payment4 General Settings', 'payment4-gateway-pro'),
-                'description'       => __('Enable/Disable Sandbox mode', 'payment4-gateway-pro'),
+                'label'             => __('Managed in Payment4 General Settings', 'payment4-crypto-payment-gateway'),
+                'description'       => __('Enable/Disable Sandbox mode', 'payment4-crypto-payment-gateway'),
                 'default'           => ! empty($general_options['sandbox_mode']) ? 'yes' : 'no',
                 'custom_attributes' => ['disabled' => 'disabled'],
                 'desc_tip'          => true,
             ],
             'title'              => [
-                'title'       => __('Title', 'payment4-gateway-pro'),
+                'title'       => __('Title', 'payment4-crypto-payment-gateway'),
                 'type'        => 'text',
-                'description' => __('Gateway title', 'payment4-gateway-pro'),
-                'default'     => __('Payment4', 'payment4-gateway-pro'),
+                'description' => __('Gateway title', 'payment4-crypto-payment-gateway'),
+                'default'     => __('Payment4', 'payment4-crypto-payment-gateway'),
                 'desc_tip'    => true,
             ],
             'description'        => [
-                'title'       => __('Description', 'payment4-gateway-pro'),
+                'title'       => __('Description', 'payment4-crypto-payment-gateway'),
                 'type'        => 'text',
-                'description' => __('Gateway description', 'payment4-gateway-pro'),
-                'default'     => __('Accepting Crypto Payments', 'payment4-gateway-pro'),
+                'description' => __('Gateway description', 'payment4-crypto-payment-gateway'),
+                'default'     => __('Accepting Crypto Payments', 'payment4-crypto-payment-gateway'),
                 'desc_tip'    => true,
             ],
             'discount_percent'   => [
-                'title'       => __('Discount Percent', 'payment4-gateway-pro'),
+                'title'       => __('Discount Percent', 'payment4-crypto-payment-gateway'),
                 'type'        => 'text',
-                'description' => __('Set 0 for no Discount', 'payment4-gateway-pro'),
+                'description' => __('Set 0 for no Discount', 'payment4-crypto-payment-gateway'),
                 'default'     => '0.0',
             ],
             'completed_massage'  => [
-                'title'       => __('Success payment message', 'payment4-gateway-pro'),
+                'title'       => __('Success payment message', 'payment4-crypto-payment-gateway'),
                 'type'        => 'textarea',
                 'description' => $shortcodes,
-                'default'     => __('Successful payment.', 'payment4-gateway-pro'),
+                'default'     => __('Successful payment.', 'payment4-crypto-payment-gateway'),
             ],
             'failed_massage'     => [
-                'title'       => __('Failed payment message', 'payment4-gateway-pro'),
+                'title'       => __('Failed payment message', 'payment4-crypto-payment-gateway'),
                 'type'        => 'textarea',
                 'description' => $shortcodes,
-                'default'     => __('Transaction Failed.', 'payment4-gateway-pro'),
+                'default'     => __('Transaction Failed.', 'payment4-crypto-payment-gateway'),
             ],
             'accepted_massage'   => [
-                'title'       => __('Acceptable payment message', 'payment4-gateway-pro'),
+                'title'       => __('Acceptable payment message', 'payment4-crypto-payment-gateway'),
                 'type'        => 'textarea',
                 'description' => $shortcodes,
-                'default'     => __('Payment accepted.', 'payment4-gateway-pro'),
+                'default'     => __('Payment accepted.', 'payment4-crypto-payment-gateway'),
             ],
             'mismatched_massage' => [
-                'title'       => __('Mismatched payment message', 'payment4-gateway-pro'),
+                'title'       => __('Mismatched payment message', 'payment4-crypto-payment-gateway'),
                 'type'        => 'textarea',
                 'description' => $shortcodes,
-                'default'     => __('Payment Mismatched.', 'payment4-gateway-pro'),
+                'default'     => __('Payment Mismatched.', 'payment4-crypto-payment-gateway'),
             ],
         ];
         $this->form_fields = apply_filters('WC_Payment4_Config', $fields);
@@ -485,7 +485,7 @@ class WC_Payment4 extends WC_Payment_Gateway
         $form = '<form action="" method="POST" class="p4-payment-form" id="p4-payment-form">';
         $form .= '<a class="button cancel" href="' . esc_url($this->get_checkout_url()) . '">' . esc_html__(
                 'Back',
-                'payment4-gateway-pro'
+                'payment4-crypto-payment-gateway'
             ) . '</a>';
         $form .= '</form><br/>';
 
@@ -499,7 +499,7 @@ class WC_Payment4 extends WC_Payment_Gateway
     {
         $currency = $this->getCurrency();
         if ($currency === false) {
-            return __("The selected currency is not supported", 'payment4-gateway-pro');
+            return __("The selected currency is not supported", 'payment4-crypto-payment-gateway');
         }
 
         $amount   = $this->get_total();
@@ -566,7 +566,7 @@ class WC_Payment4 extends WC_Payment_Gateway
         );
 
         if (empty($order_id)) {
-            $this->set_message('failed', __('Order number not found.', 'payment4-gateway-pro'), $redirect);
+            $this->set_message('failed', __('Order number not found.', 'payment4-crypto-payment-gateway'), $redirect);
         }
 
         $order = $this->get_order($order_id);
@@ -574,7 +574,7 @@ class WC_Payment4 extends WC_Payment_Gateway
         if ( ! $this->needs_payment($order)) {
             $this->set_message(
                 'failed',
-                __('The status of the transaction has already been determined.', 'payment4-gateway-pro'),
+                __('The status of the transaction has already been determined.', 'payment4-crypto-payment-gateway'),
                 $redirect
             );
         }
@@ -616,7 +616,7 @@ class WC_Payment4 extends WC_Payment_Gateway
             default:
                 // failed یا هرچیزی که غیر از موارد بالا باشه
                 if ($order->get_status() !== 'failed') {
-                    $order->update_status('wc-failed', __('Payment failed.', 'payment4-gateway-pro'));
+                    $order->update_status('wc-failed', __('Payment failed.', 'payment4-crypto-payment-gateway'));
                 }
 
                 $this->order_note($order, 'failed', [
@@ -762,22 +762,22 @@ class WC_Payment4 extends WC_Payment_Gateway
                         if (empty($error)) {
                             $error = $payment_status === "acceptable" ? __(
                                 "Payment acceptable.",
-                                'payment4-gateway-pro'
-                            ) : __("Payment successfull.", 'payment4-gateway-pro');
+                                'payment4-crypto-payment-gateway'
+                            ) : __("Payment successfull.", 'payment4-crypto-payment-gateway');
                         }
                     } else {
                         $paymentStatus = $payment_status;
                         if (empty($error)) {
                             $error = $payment_status === "mismatch" ? __(
                                 "Payment mismatched.",
-                                'payment4-gateway-pro'
-                            ) : __("Payment failed.", 'payment4-gateway-pro');
+                                'payment4-crypto-payment-gateway'
+                            ) : __("Payment failed.", 'payment4-crypto-payment-gateway');
                         }
                     }
                 }
             }
         } else {
-            $error = __("Payment ID not found", 'payment4-gateway-pro');
+            $error = __("Payment ID not found", 'payment4-crypto-payment-gateway');
         }
 
         $this->set_shortcodes(['transaction_id' => $transaction_id]);
@@ -1235,23 +1235,23 @@ class WC_Payment4 extends WC_Payment_Gateway
     protected function payment4_response_errors($errorCode)
     {
         $errors = [
-            1001 => __('callbackUrl must be a URL address in production mode', 'payment4-gateway-pro'),
-            1002 => __('api key not send', 'payment4-gateway-pro'),
-            1003 => __('api key not found', 'payment4-gateway-pro'),
-            1004 => __('gateway not approved', 'payment4-gateway-pro'),
-            1006 => __('payment not found', 'payment4-gateway-pro'),
-            1010 => __('invalid amount', 'payment4-gateway-pro'),
-            1012 => __('invalid currency', 'payment4-gateway-pro'),
-            1005 => __('assets not found', 'payment4-gateway-pro'),
-            1011 => __('payment amount lower than minimum', 'payment4-gateway-pro'),
-            1013 => __('invalid language', 'payment4-gateway-pro'),
+            1001 => __('callbackUrl must be a URL address in production mode', 'payment4-crypto-payment-gateway'),
+            1002 => __('api key not send', 'payment4-crypto-payment-gateway'),
+            1003 => __('api key not found', 'payment4-crypto-payment-gateway'),
+            1004 => __('gateway not approved', 'payment4-crypto-payment-gateway'),
+            1006 => __('payment not found', 'payment4-crypto-payment-gateway'),
+            1010 => __('invalid amount', 'payment4-crypto-payment-gateway'),
+            1012 => __('invalid currency', 'payment4-crypto-payment-gateway'),
+            1005 => __('assets not found', 'payment4-crypto-payment-gateway'),
+            1011 => __('payment amount lower than minimum', 'payment4-crypto-payment-gateway'),
+            1013 => __('invalid language', 'payment4-crypto-payment-gateway'),
         ];
 
         if (array_key_exists($errorCode, $errors)) {
             return $errors[$errorCode];
         }
 
-        return __('An error occurred during payment.', 'payment4-gateway-pro');
+        return __('An error occurred during payment.', 'payment4-crypto-payment-gateway');
     }
 
     public function have_discount()

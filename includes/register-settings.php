@@ -11,14 +11,14 @@ function payment4_register_settings()
 
     add_settings_section(
         'payment4_main_section',
-        __('General Settings', 'payment4-gateway-pro'),
+        __('General Settings', 'payment4-crypto-payment-gateway'),
         null,
         'payment4_gateway_pro'
     );
 
     add_settings_field(
         'api_key',
-        __('API Key', 'payment4-gateway-pro'),
+        __('API Key', 'payment4-crypto-payment-gateway'),
         function () {
             $options = get_option('payment4_gateway_pro_settings');
             ?>
@@ -32,7 +32,7 @@ function payment4_register_settings()
 
     add_settings_field(
         'sandbox_mode',
-        __('SandBox Mode', 'payment4-gateway-pro'),
+        __('SandBox Mode', 'payment4-crypto-payment-gateway'),
         function () {
             $options = get_option('payment4_gateway_pro_settings');
             $checked = !empty($options['sandbox_mode']) ? 'checked' : '';
@@ -47,7 +47,7 @@ function payment4_register_settings()
 
     add_settings_section(
         'payment4_plugins_section',
-        __('Select Active Plugins', 'payment4-gateway-pro'),
+        __('Select Active Plugins', 'payment4-crypto-payment-gateway'),
         null,
         'payment4_plugins'
     );
@@ -80,10 +80,10 @@ function payment4_admin_settings_notice()
         isset($_GET['settings-updated']) &&
         $_GET['settings-updated'] == 'true' &&
         isset($_GET['page']) &&
-        ($_GET['page'] === 'payment4-gateway-pro' || $_GET['page'] === 'payment4-gateway-pro-plugins')
+        ($_GET['page'] === 'payment4-crypto-payment-gateway' || $_GET['page'] === 'payment4-gateway-pro-plugins')
     ) {
         echo '<div class="notice notice-success is-dismissible">
-            <p>' . __('Settings saved successfully.', 'payment4-gateway-pro') . '</p>
+            <p>' . __('Settings saved successfully.', 'payment4-crypto-payment-gateway') . '</p>
         </div>';
     }
 }
