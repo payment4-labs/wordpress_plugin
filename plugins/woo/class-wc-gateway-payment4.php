@@ -45,6 +45,9 @@ class Payment4CPG_WC_Gateway extends WC_Payment_Gateway
 
         $this->init_form_fields();
         $this->init_settings();
+        
+        // Override API key and sandbox values from general settings
+        $this->sync_general_settings();
 
         $this->title = $this->settings['title'] . " " . __('( Pay with Crypto )', 'payment4-crypto-payment-gateway');
         $img         = ' <img src="' . $this->icon . '" style="width: 90px;" >';
@@ -292,6 +295,24 @@ class Payment4CPG_WC_Gateway extends WC_Payment_Gateway
     }
 
     /**
+     * Sync API Key and Sandbox values from general settings.
+     */
+    private function sync_general_settings()
+    {
+        $general_options = get_option('payment4_gateway_pro_settings', []);
+        
+        // Always use values from general settings for these fields
+        if (isset($general_options['api_key'])) {
+            $this->settings['api_key'] = $general_options['api_key'];
+        }
+        
+        // Display sandbox status as text
+        $this->settings['sandbox'] = !empty($general_options['sandbox_mode']) 
+            ? __('Enabled', 'payment4-crypto-payment-gateway') 
+            : __('Disabled', 'payment4-crypto-payment-gateway');
+    }
+
+    /**
      * Option fields.
      */
     public function init_form_fields()
@@ -325,11 +346,10 @@ class Payment4CPG_WC_Gateway extends WC_Payment_Gateway
             ],
             'sandbox'            => [
                 'title'             => __('Sandbox Mode', 'payment4-crypto-payment-gateway'),
-                'type'              => 'checkbox',
-                'label'             => __('Managed in Payment4 General Settings', 'payment4-crypto-payment-gateway'),
-                'description'       => __('Enable/Disable Sandbox mode', 'payment4-crypto-payment-gateway'),
-                'default'           => ! empty($general_options['sandbox_mode']) ? 'yes' : 'no',
-                'custom_attributes' => ['disabled' => 'disabled'],
+                'type'              => 'text',
+                'description'       => __('Managed in Payment4 General Settings', 'payment4-crypto-payment-gateway'),
+                'default'           => ! empty($general_options['sandbox_mode']) ? __('Enabled', 'payment4-crypto-payment-gateway') : __('Disabled', 'payment4-crypto-payment-gateway'),
+                'custom_attributes' => ['readonly' => 'readonly'],
                 'desc_tip'          => true,
             ],
             'title'              => [
@@ -1147,13 +1167,13 @@ class Payment4CPG_WC_Gateway extends WC_Payment_Gateway
         $general_options = get_option('payment4_gateway_pro_settings', []);
 
         // Prioritize settings from payment4_gateway_pro_settings
-        if ($name === 'api_key' && isset($general_options['api_key'])) {
-            return $general_options['api_key'];
+        if ($name === 'api_key') {
+            return ! empty($general_options['api_key']) ? $general_options['api_key'] : '';
         }
-        if ($name === 'sandbox' && isset($general_options['sandbox_mode'])) {
-            return ! empty($general_options['sandbox_mode']) ? '1' : '0';
+        if ($name === 'sandbox') {
+            return ! empty($general_options['sandbox_mode']) ? $general_options['sandbox_mode'] : '0';
         }
-
+        
         $option = '';
         if (method_exists($this, 'get_option')) {
             $option = $this->get_option($name);
