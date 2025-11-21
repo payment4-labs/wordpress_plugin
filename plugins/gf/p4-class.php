@@ -17,7 +17,7 @@ class Payment4CPG_GF_Gateway extends GFPaymentAddOn
     /** Unique slug used by Gravity Forms. */
     protected $_slug = 'payment4cpg_gf';
     /** Path to this plugin file, relative to the plugins directory. */
-    protected $_path = 'payment4-gateway-pro/plugins/gf/p4-class.php';
+    protected $_path = 'payment4-crypto-payment-gateway/plugins/gf/p4-class.php';
     /** Full path to this plugin file. */
     protected $_full_path = __FILE__;
     /** The title of the plugin shown in the Gravity Forms Add-On list. */
