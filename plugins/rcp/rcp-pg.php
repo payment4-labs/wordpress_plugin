@@ -12,10 +12,10 @@ function payment4_rcp_register_gateway($gateways)
     // Check if RCP is enabled in plugin settings
     $plugin_options = get_option('payment4_gateway_pro_plugins', []);
     if ( ! empty($plugin_options['rcp'])) {
-        $gateways['payment4'] = [
+        $gateways['payment4cpg_rcp'] = [
             'label'       => __('Payment4 (Pay with Crypto)', 'payment4-crypto-payment-gateway'),
             'admin_label' => __('Payment4', 'payment4-crypto-payment-gateway'),
-            'class'       => 'RCP_Payment_Gateway_Payment4',
+            'class'       => 'Payment4CPG_RCP_Gateway',
         ];
     }
 
@@ -25,7 +25,7 @@ function payment4_rcp_register_gateway($gateways)
 /**
  * Payment4 Payment Gateway for Restrict Content Pro
  */
-class RCP_Payment_Gateway_Payment4 extends RCP_Payment_Gateway
+class Payment4CPG_RCP_Gateway extends RCP_Payment_Gateway
 {
     private $api_base_url = 'https://service.payment4.com/api/v1';
     private $api_key;
@@ -101,7 +101,7 @@ class RCP_Payment_Gateway_Payment4 extends RCP_Payment_Gateway
         }
 
         $callback_params = [
-            'rcp_gateway'   => 'payment4',
+            'rcp_gateway'   => 'payment4cpg_rcp',
             'membership_id' => $this->membership->get_id(),
             'payment_id'    => $this->payment->id,
         ];
@@ -118,7 +118,7 @@ class RCP_Payment_Gateway_Payment4 extends RCP_Payment_Gateway
         $base_webhook_url   = $parsed_webhook_url['scheme'] . '://' . $parsed_webhook_url['host'] . $parsed_webhook_url['path'];
 
         $webhook_params = [
-            'rcp_gateway'   => 'payment4',
+            'rcp_gateway'   => 'payment4cpg_rcp',
             'membership_id' => $this->membership->get_id(),
             'payment_id'    => $this->payment->id,
         ];
@@ -209,7 +209,7 @@ class RCP_Payment_Gateway_Payment4 extends RCP_Payment_Gateway
     {
         global $rcp_payments_db;
 
-        if (empty($_GET['rcp_gateway']) || $_GET['rcp_gateway'] !== 'payment4' || empty($_GET['membership_id'])) {
+        if (empty($_GET['rcp_gateway']) || $_GET['rcp_gateway'] !== 'payment4cpg_rcp' || empty($_GET['membership_id'])) {
             wp_die('Invalid webhook request.', 'Payment4', ['response' => 400]);
         }
 
@@ -564,8 +564,8 @@ class RCP_Payment_Gateway_Payment4 extends RCP_Payment_Gateway
 add_action('init', 'payment4_rcp_handle_webhook');
 function payment4_rcp_handle_webhook()
 {
-    if ( ! empty($_GET['rcp_gateway']) && $_GET['rcp_gateway'] === 'payment4') {
-        $gateway = new RCP_Payment_Gateway_Payment4();
+    if ( ! empty($_GET['rcp_gateway']) && $_GET['rcp_gateway'] === 'payment4cpg_rcp') {
+        $gateway = new Payment4CPG_RCP_Gateway();
         $gateway->process_webhook();
     }
 }

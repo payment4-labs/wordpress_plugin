@@ -6,9 +6,9 @@ use Automattic\WooCommerce\Utilities\FeaturesUtil;
 /**
  * Payment4 Payment gateway plugin class.
  *
- * @class WC_Payment4_Payments
+ * @class Payment4CPG_WC_Loader
  */
-class WC_Payment4_Payments
+class Payment4CPG_WC_Loader
 {
 
     /**
@@ -72,7 +72,7 @@ class WC_Payment4_Payments
             'woocommerce_blocks_payment_method_type_registration',
             function (Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry) {
                 // Register an instance of My_Custom_Gateway_Blocks
-                $payment_method_registry->register(new WC_Payment4_Blocks);
+                $payment_method_registry->register(new Payment4CPG_WC_Blocks);
             }
         );
     }
@@ -83,8 +83,8 @@ class WC_Payment4_Payments
         $gateways = WC()->payment_gateways->payment_gateways();
 
         // Check if our gateway is active and in the list.
-        if (isset($gateways['WC_Payment4'])) {
-            $payment_gateway = $gateways['WC_Payment4'];
+        if (isset($gateways['payment4cpg_wc'])) {
+            $payment_gateway = $gateways['payment4cpg_wc'];
 
             // Now you can use the instance to check for the discount.
             if ($payment_gateway->have_discount()) {
@@ -108,7 +108,7 @@ class WC_Payment4_Payments
      */
     public static function add_gateway($gateways)
     {
-        $gateways[] = 'WC_Payment4';
+        $gateways[] = 'Payment4CPG_WC_Gateway';
 
         return $gateways;
     }
@@ -118,7 +118,7 @@ class WC_Payment4_Payments
      */
     public static function includes()
     {
-        // Make the WC_Payment4 class available.
+        // Make the Payment4CPG_WC_Gateway class available.
         if (class_exists('WC_Payment_Gateway')) {
             require_once 'class-wc-gateway-payment4.php';
         }
@@ -145,7 +145,7 @@ class WC_Payment4_Payments
     }
 }
 
-WC_Payment4_Payments::init();
+Payment4CPG_WC_Loader::init();
 
 add_action('init', 'payment4_register_custom_order_status');
 

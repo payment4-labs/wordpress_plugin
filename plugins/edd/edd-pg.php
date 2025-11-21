@@ -5,7 +5,7 @@ if ( ! defined('ABSPATH')) {
     exit;
 }
 
-class Payment4Edd
+class Payment4CPG_EDD_Gateway
 {
     private $api_base_url = 'https://service.payment4.com/api/v1';
     private $api_key;
@@ -26,11 +26,11 @@ class Payment4Edd
     public function hooks()
     {
         add_filter('edd_payment_gateways', [$this, 'register_payment4_gateway']);
-        add_action('edd_payment4_cc_form', '__return_false');
-        add_action('edd_gateway_payment4', [$this, 'process_payment']);
+        add_action('edd_payment4cpg_edd_cc_form', '__return_false');
+        add_action('edd_gateway_payment4cpg_edd', [$this, 'process_payment']);
         add_action('edd_pre_process_purchase', [$this, 'is_payment4_configured'], 1);
         add_action('init', [$this, 'process_redirect']);
-        add_action('p4_edd_payment4_redirect_verify', [$this, 'process_redirect_payment']);
+        add_action('payment4cpg_edd_redirect_verify', [$this, 'process_redirect_payment']);
         add_filter('edd_currencies', [$this, 'add_currencies']);
         add_filter('edd_accepted_payment_icons', [$this, 'payment_icon']);
         add_filter('edd_currency_symbol', [$this, 'extra_currency_symbol'], 10, 2);
@@ -46,7 +46,7 @@ class Payment4Edd
         // Check if EDD is enabled in plugin settings
         $plugin_options = get_option('payment4_gateway_pro_plugins', []);
         if ( ! empty($plugin_options['edd'])) {
-            $gateways['payment4'] = array(
+            $gateways['payment4cpg_edd'] = array(
                 'admin_label'    => __('Payment4', 'payment4-crypto-payment-gateway'),
                 'checkout_label' => __('Payment4 (Pay with Crypto)', 'payment4-crypto-payment-gateway'),
             );
@@ -57,17 +57,17 @@ class Payment4Edd
 
     public function is_payment4_configured()
     {
-        $is_enabled     = edd_is_gateway_active('payment4');
+        $is_enabled     = edd_is_gateway_active('payment4cpg_edd');
         $chosen_gateway = edd_get_chosen_gateway();
 
-        if ('payment4' === $chosen_gateway && ! $is_enabled) {
+        if ('payment4cpg_edd' === $chosen_gateway && ! $is_enabled) {
             edd_set_error(
                 'payment4_gateway_not_configured',
                 __('Payment4 payment gateway is not setup.', 'payment4-crypto-payment-gateway')
             );
         }
 
-        if ('payment4' === $chosen_gateway && ! $this->get_supported_currencies()) {
+        if ('payment4cpg_edd' === $chosen_gateway && ! $this->get_supported_currencies()) {
             edd_set_error(
                 'payment4_gateway_invalid_currency',
                 __(
@@ -93,7 +93,7 @@ class Payment4Edd
             'cart_details' => $purchase_data['cart_details'],
             'user_info'    => $purchase_data['user_info'],
             'status'       => 'pending',
-            'gateway'      => 'payment4',
+            'gateway'      => 'payment4cpg_edd',
         );
 
         $payment_id = edd_insert_payment($payment_data);
@@ -107,7 +107,7 @@ class Payment4Edd
                 )
             );
 
-            edd_send_back_to_checkout('?payment-mode=payment4');
+            edd_send_back_to_checkout('?payment-mode=payment4cpg_edd');
         } else {
             $payment4_data  = [];
             $transaction_id = 'EDD-' . $payment_id . '-' . uniqid();
@@ -132,7 +132,7 @@ class Payment4Edd
                 );
                 edd_set_error('payment4_error', $error_message);
             }
-            edd_send_back_to_checkout('?payment-mode=payment4');
+            edd_send_back_to_checkout('?payment-mode=payment4cpg_edd');
         }
     }
 
@@ -149,7 +149,7 @@ class Payment4Edd
         }
 
         // Process return_url to extract base URL and query parameters
-        $callback_url      = add_query_arg('edd-listener', 'payment4', home_url('index.php'));
+        $callback_url      = add_query_arg('edd-listener', 'payment4cpg_edd', home_url('index.php'));
         $parsed_url        = parse_url($callback_url);
         $base_callback_url = $parsed_url['scheme'] . '://' . $parsed_url['host'];
         if ( ! empty($parsed_url['path'])) {
@@ -217,8 +217,8 @@ class Payment4Edd
         }
 
         // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-        if ('payment4' === strtolower(trim(sanitize_text_field(wp_unslash($_GET['edd-listener']))))) {
-            do_action('p4_edd_payment4_redirect_verify');
+        if ('payment4cpg_edd' === strtolower(trim(sanitize_text_field(wp_unslash($_GET['edd-listener']))))) {
+            do_action('payment4cpg_edd_redirect_verify');
         }
     }
 
@@ -560,4 +560,4 @@ add_action('admin_enqueue_scripts', function () {
     wp_add_inline_style('payment4-edd-status', $custom_css);
 });
 
-new Payment4Edd();
+new Payment4CPG_EDD_Gateway();

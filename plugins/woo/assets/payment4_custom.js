@@ -1,6 +1,6 @@
 (function ($) {
-	// Your gateway ID, matching the PHP class name
-	const payment4Id = 'WC_Payment4';
+	// Your gateway ID, matching the PHP gateway ID
+	const payment4Id = 'payment4cpg_wc';
 
 	// This is the main function that runs when a payment method is changed
 	function handlePaymentMethodChange() {

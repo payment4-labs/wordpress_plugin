@@ -1,4 +1,4 @@
-const Pay4_settings = window.wc.wcSettings.getSetting( 'WC_Payment4_data', {} );
+const Pay4_settings = window.wc.wcSettings.getSetting( 'payment4cpg_wc_data', {} );
 const Pay4_label = window.wp.htmlEntities.decodeEntities( Pay4_settings.title ) || window.wp.i18n.__( '( Pay with Crypto )', 'payment4-gateway-pro' );
 const Pay4_Content = () => {
     return window.wp.htmlEntities.decodeEntities( Pay4_settings.description || window.wp.i18n.__('Accepting Crypto Payments', 'payment4-gateway-pro') );
@@ -20,7 +20,7 @@ const Pay4_Label = () => {
 }
 
 const Pay4_Block_Gateway = {
-    name: 'WC_Payment4',
+    name: 'payment4cpg_wc',
     label: React.createElement(Pay4_Label),
     content: React.createElement(Pay4_Content),
     edit: React.createElement(Pay4_Content),
@@ -64,13 +64,13 @@ jQuery(document).ready(function($) {
                 discountFound = true;
 
                 // If a discount is found but another method is selected, store its value
-                if (selectedMethod !== 'WC_Payment4') {
+                if (selectedMethod !== 'payment4cpg_wc') {
                     var $valueElement = $item.find('.wc-block-components-totals-item__value');
                     discountValue = extractNumericValue($valueElement.text());
                 }
 
                 // Show or hide the discount row based on the selected payment method
-                if (selectedMethod === 'WC_Payment4') {
+                if (selectedMethod === 'payment4cpg_wc') {
                     $item.show();
                 } else {
                     $item.hide();
@@ -82,7 +82,7 @@ jQuery(document).ready(function($) {
 
         // If a discount was found and we're switching to another method,
         // we manually adjust the total back.
-        if (discountFound && selectedMethod !== 'WC_Payment4' && discountValue > 0) {
+        if (discountFound && selectedMethod !== 'payment4cpg_wc' && discountValue > 0) {
             updateTotalDisplay(-discountValue);
         }
     }

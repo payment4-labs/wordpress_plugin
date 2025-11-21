@@ -2,15 +2,15 @@
 
 use Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType;
 
-final class WC_Payment4_Blocks extends AbstractPaymentMethodType
+final class Payment4CPG_WC_Blocks extends AbstractPaymentMethodType
 {
 
     private $gateway;
-    protected $name = 'WC_Payment4';// your payment gateway name
+    protected $name = 'payment4cpg_wc';// your payment gateway name
 
     public function initialize()
     {
-        $this->settings = get_option('woocommerce_WC_Payment4_settings', []);
+        $this->settings = get_option('woocommerce_payment4cpg_wc_settings', []);
 
         // you can also initialize your payment gateway here
         $gateways = WC()->payment_gateways->payment_gateways();
@@ -24,7 +24,7 @@ final class WC_Payment4_Blocks extends AbstractPaymentMethodType
     public function get_payment_method_script_handles() {
 
         wp_register_script(
-            'wc-payment4-blocks-integration',
+            'payment4cpg-wc-blocks-integration',
             plugin_dir_url( __FILE__ ) . 'assets/checkout.js',
             array(
                 'wc-blocks-registry',
@@ -39,7 +39,7 @@ final class WC_Payment4_Blocks extends AbstractPaymentMethodType
 
         // Localize script to pass Ajax URL and nonce
         wp_localize_script(
-            'wc-payment4-blocks-integration',
+            'payment4cpg-wc-blocks-integration',
             'payment4Ajax',
             array(
                 'ajax_url' => admin_url( 'admin-ajax.php' ),
@@ -47,7 +47,7 @@ final class WC_Payment4_Blocks extends AbstractPaymentMethodType
             )
         );
 
-        return array( 'wc-payment4-blocks-integration' );
+        return array( 'payment4cpg-wc-blocks-integration' );
 
     }
 

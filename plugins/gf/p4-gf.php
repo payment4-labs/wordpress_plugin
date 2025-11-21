@@ -1,10 +1,10 @@
 <?php
 
-if ( ! class_exists('GFPayment4_Bootstrap')) {
+if ( ! class_exists('Payment4CPG_GF_Bootstrap')) {
     // Initialize the add-on when Gravity Forms is loaded
-    add_action('gform_loaded', array('GFPayment4_Bootstrap', 'load'), 5);
+    add_action('gform_loaded', array('Payment4CPG_GF_Bootstrap', 'load'), 5);
 
-    class GFPayment4_Bootstrap
+    class Payment4CPG_GF_Bootstrap
     {
         public static function load()
         {
@@ -17,7 +17,7 @@ if ( ! class_exists('GFPayment4_Bootstrap')) {
             GFForms::include_payment_addon_framework();
             require_once 'p4-class.php';
             // Register the add-on class
-            GFAddOn::register('GFPayment4');
+            GFAddOn::register('Payment4CPG_GF_Gateway');
         }
     }
 }
@@ -25,9 +25,9 @@ if ( ! class_exists('GFPayment4_Bootstrap')) {
 /**
  * Returns the instance of the add-on (used internally by Gravity Forms).
  */
-function gfpayment4()
+function payment4cpg_gf()
 {
-    return GFPayment4::get_instance();
+    return Payment4CPG_GF_Gateway::get_instance();
 }
 
 add_filter('the_content', 'payment4_display_callback_message');

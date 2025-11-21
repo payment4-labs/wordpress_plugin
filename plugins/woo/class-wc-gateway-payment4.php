@@ -7,7 +7,7 @@ if ( ! defined('ABSPATH')) {
 /**
  * Gateway class
  */
-class WC_Payment4 extends WC_Payment_Gateway
+class Payment4CPG_WC_Gateway extends WC_Payment_Gateway
 {
 
     /**
@@ -36,7 +36,7 @@ class WC_Payment4 extends WC_Payment_Gateway
      */
     public function __construct()
     {
-        $this->id                 = 'WC_Payment4';
+        $this->id                 = 'payment4cpg_wc';
         $this->method_title       = __('Payment4', 'payment4-crypto-payment-gateway');
         $this->method_description = __('Gateway settings for WooCommerce', 'payment4-crypto-payment-gateway');
         $this->icon               = trailingslashit(WP_PLUGIN_URL) . plugin_basename(
@@ -376,7 +376,7 @@ class WC_Payment4 extends WC_Payment_Gateway
                 'default'     => __('Payment Mismatched.', 'payment4-crypto-payment-gateway'),
             ],
         ];
-        $this->form_fields = apply_filters('WC_Payment4_Config', $fields);
+        $this->form_fields = apply_filters('payment4cpg_wc_gateway_config', $fields);
     }
 
     /**

@@ -2,7 +2,7 @@
 /**
  * Main Add-On Class for Payment4
  */
-class GFPayment4 extends GFPaymentAddOn
+class Payment4CPG_GF_Gateway extends GFPaymentAddOn
 {
 
     /** The version of the add-on. */
@@ -10,7 +10,7 @@ class GFPayment4 extends GFPaymentAddOn
     /** Minimum Gravity Forms version required. */
     protected $_min_gravityforms_version = '2.5';
     /** Unique slug used by Gravity Forms. */
-    protected $_slug = 'gravityformspayment4';
+    protected $_slug = 'payment4cpg_gf';
     /** Path to this plugin file, relative to the plugins directory. */
     protected $_path = 'payment4-gateway-pro/plugins/gf/p4-class.php';
     /** Full path to this plugin file. */
