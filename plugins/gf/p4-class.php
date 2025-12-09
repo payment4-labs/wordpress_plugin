@@ -40,12 +40,12 @@ class Payment4CPG_GF_Gateway extends GFPaymentAddOn
     /**
      * Get singleton instance.
      *
-     * @return GFPayment4
+     * @return Payment4CPG_GF_Gateway
      */
     public static function get_instance()
     {
         if (self::$_instance === null) {
-            self::$_instance = new GFPayment4();
+            self::$_instance = new self();
         }
 
         return self::$_instance;
